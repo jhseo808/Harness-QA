@@ -1,0 +1,44 @@
+{
+  "project": "my-todo-app",
+  "phase": "0-mvp",
+  "steps": [
+    {
+      "step": 0,
+      "name": "project-setup",
+      "status": "completed",
+      "started_at": "2025-05-20T09:00:00Z",
+      "completed_at": "2025-05-20T09:12:00Z",
+      "summary": "Next.js 15 + TypeScript + Tailwind 프로젝트 초기화 완료. package.json, tsconfig.json, tailwind.config.ts 생성. npm run build 통과."
+    },
+    {
+      "step": 1,
+      "name": "core-types",
+      "status": "completed",
+      "started_at": "2025-05-20T09:13:00Z",
+      "completed_at": "2025-05-20T09:25:00Z",
+      "summary": "types/todo.ts에 Todo, TodoStatus, CreateTodoInput 타입 정의 완료. Zod 스키마 포함."
+    },
+    {
+      "step": 2,
+      "name": "api-layer",
+      "status": "completed",
+      "started_at": "2025-05-20T09:26:00Z",
+      "completed_at": "2025-05-20T09:55:00Z",
+      "summary": "app/api/todos/route.ts (GET/POST), app/api/todos/[id]/route.ts (PATCH/DELETE) 구현 완료. Jest 단위 테스트 8개 통과."
+    },
+    {
+      "step": 3,
+      "name": "ui-components",
+      "status": "error",
+      "started_at": "2025-05-20T09:56:00Z",
+      "failed_at": "2025-05-20T10:10:00Z",
+      "error_message": "TodoItem 컴포넌트의 체크박스 접근성 속성(aria-checked) 누락으로 테스트 3개 실패. npm test 결과: FAIL components/TodoItem.test.tsx"
+    },
+    {
+      "step": 4,
+      "name": "qa-web",
+      "status": "pending",
+      "agent": "qa/playwright"
+    }
+  ]
+}
