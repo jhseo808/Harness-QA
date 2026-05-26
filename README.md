@@ -72,6 +72,10 @@ Harness-QA/
 - Claude Code CLI 설치 (`claude` 명령어 사용 가능)
 - Git 저장소 (자동 브랜치/커밋에 필요)
 
+```bash
+pip install -r requirements.txt
+```
+
 ### 1. Phase 구조 작성
 
 ```
