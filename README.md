@@ -30,36 +30,44 @@ phases/0-mvp/
 ```
 Harness-QA/
 ├── scripts/
-│   ├── execute.py          # 하네스 핵심 실행기
-│   └── test_execute.py     # execute.py 단위 테스트
+│   ├── execute.py              # 하네스 핵심 실행기
+│   └── test_execute.py         # execute.py 단위 테스트
 │
-├── agents/qa/              # QA 에이전트 페르소나 정의 (마크다운)
-│   ├── _base.md            # 모든 QA 에이전트 공통 헌장
+├── agents/qa/                  # QA 에이전트 페르소나 정의 (마크다운)
+│   ├── _base.md                # 모든 QA 에이전트 공통 헌장 (팀 계약, 산출물 경로)
+│   ├── qa-lead.md              # QA 전략·활성화 agent 결정·품질 게이트 확정
 │   ├── requirements-analyst.md
 │   ├── test-case-designer.md
-│   ├── playwright.md       # 웹 UI 자동화 (Playwright)
-│   ├── appium.md           # 모바일 앱 자동화
-│   ├── api-tester.md       # REST/GraphQL API 테스트
-│   ├── ai-service-tester.md
-│   ├── performance-tester.md
-│   ├── security-tester.md
-│   └── reporter.md
+│   ├── playwright.md           # 웹 UI E2E 자동화 (Playwright)
+│   ├── appium.md               # iOS/Android 모바일 앱 자동화
+│   ├── api-tester.md           # REST/GraphQL API 계약 검증
+│   ├── ai-service-tester.md    # AI 서비스 응답 품질·안전성 검증
+│   ├── performance-tester.md   # 부하 테스트·SLA 검증
+│   ├── security-tester.md      # OWASP Top 10 기반 취약점 탐지
+│   └── reporter.md             # 릴리스 의사결정 보고서 합성
 │
-├── examples/phases/        # 실제 사용 예제 (my-todo-app)
-│   ├── index.json          # 전체 phase 목록 및 상태
-│   └── 0-mvp/
-│       ├── index.json      # Phase 상태 (step별 status/summary)
-│       ├── step0.md        # 프로젝트 초기화
-│       ├── step1.md        # 타입 정의
-│       └── step4.md        # QA 자동화 (qa/playwright 에이전트)
+├── examples/phases/            # 실행 가능한 예제 (my-todo-app 기준)
+│   ├── index.json              # 전체 phase 목록
+│   ├── 0-mvp/                  # MVP 구현 phase (일반 개발 예제)
+│   │   ├── index.json
+│   │   ├── step0.md ~ step4.md
+│   └── 1-qa-cycle/             # QA 사이클 phase (QA 에이전트 예제)
+│       ├── index.json
+│       └── step0.md ~ step5.md # qa-lead → requirements → test-case → api → playwright → reporter
 │
-├── docs/                   # 프로젝트 문서 템플릿
+├── docs/                       # 프로젝트 문서 템플릿 (실제 프로젝트에서 채울 것)
 │   ├── PRD.md
 │   ├── ARCHITECTURE.md
 │   └── ADR.md
 │
-├── CLAUDE.md               # Claude 행동 지침 (전역)
-└── .claude/CLAUDE.md       # 프로젝트별 지침 템플릿
+├── .claude/
+│   ├── CLAUDE.md               # 프로젝트별 기술 스택·아키텍처 규칙 템플릿
+│   └── commands/
+│       ├── harness.md          # /harness 슬래시 커맨드 (step 설계 워크플로우)
+│       └── review.md           # /review 슬래시 커맨드
+│
+├── CLAUDE.md                   # Claude 행동 지침 (전역)
+└── requirements.txt            # Python 의존성 (pytest)
 ```
 
 ---
