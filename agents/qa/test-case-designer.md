@@ -8,6 +8,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 활성화된 agent 목록 확인 → 해당 agent용 케이스만 설계
+  - 이번 사이클 품질 게이트 확인 → 커버리지 기준 조정
+  - 범위 제약 확인 → 제외된 영역의 케이스 생략
+
 `requirements-analyst`로부터:
 - 테스트 전략 문서 (범위, 제외 항목, 리스크 매트릭스)
 - 기능별 수용 기준 (Acceptance Criteria)
@@ -277,6 +282,8 @@ ID: {도메인}-{기능}-{번호} (예: API-AUTH-001)
 ---
 
 ## 출력 (Output)
+
+저장 위치: `qa-output/test-cases.md` (전체 케이스), `qa-output/coverage-matrix.md` (커버리지 매트릭스)
 
 `playwright`, `appium`, `api-tester`, `ai-service-tester`, `performance-tester`, `security-tester` 각 agent에게 전달:
 

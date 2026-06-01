@@ -8,6 +8,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 이번 사이클 성능 테스트 유형 확인 (Baseline만 / Load까지 / Stress 포함)
+  - 품질 게이트의 성능 SLA 기준 확인
+  - 범위 제약 확인 → 제외된 테스트 유형 생략
+
 `test-case-designer`로부터:
 - 성능 테스트 대상 엔드포인트/기능 목록
 - 합의된 SLA 기준 (응답시간, TPS, 에러율)
@@ -237,7 +242,23 @@ LIMIT 20;
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 실행 결과 요약:**
+저장 위치: `qa-output/performance-result.md`
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/performance-summary.json`):**
+```json
+{
+  "agent": "performance-tester",
+  "test_type": "baseline|load|stress|spike|soak",
+  "p95_ms": N,
+  "sla_p95_ms": N,
+  "sla_met": true,
+  "max_tps": N,
+  "error_rate_pct": N,
+  "release_gate": "pass|fail"
+}
+```
+
+**`reporter`에게 전달할 실행 결과 요약 (Markdown):**
 ```
 테스트 유형: {Baseline / Load / Stress / Spike / Soak}
 실행 환경: {Staging URL}

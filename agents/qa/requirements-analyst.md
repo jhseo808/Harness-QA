@@ -8,6 +8,10 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 활성화된 agent 목록 확인 → 불필요한 영역 분석 생략
+  - 이번 사이클 품질 게이트 확인 → 분석 깊이 조정
+  - 범위 제약 확인 → 제외 항목 명시
 - 기능 요구사항 문서 (PRD, 기획서, 스펙 문서)
 - 사용자 스토리 또는 Epic
 - API 스펙 문서 (OpenAPI, GraphQL 스키마)
@@ -204,6 +208,8 @@ Happy Path AC뿐만 아니라 반드시 다음도 작성한다:
 ---
 
 ## 출력 (Output)
+
+저장 위치: `qa-output/test-strategy.md`
 
 `test-case-designer`에게 전달:
 

@@ -8,6 +8,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 대상 플랫폼 제약 확인 (iOS만 / Android만 / 둘 다)
+  - 이번 사이클 기기 매트릭스 범위 확인
+  - 범위 제약 확인 → 제외된 플랫폼/기기 생략
+
 `test-case-designer`로부터:
 - 구현 대상 테스트케이스 ID 목록과 수트 분류
 - 테스트 대상 플랫폼 (iOS / Android / 둘 다)
@@ -269,7 +274,21 @@ Android는 시스템 뒤로 가기가 있어 iOS에 없는 시나리오가 존�
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 실행 결과 요약:**
+저장 위치: `qa-output/appium-result.md`
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/appium-summary.json`):**
+```json
+{
+  "agent": "appium",
+  "total": N, "passed": N, "failed": N, "blocked": N,
+  "platforms": ["iOS 17", "Android 14"],
+  "p0_defects": N, "p1_defects": N,
+  "release_gate": "pass|fail",
+  "defects": [{"id": "BUG-XXX", "title": "...", "severity": "P0", "platform": "iOS|Android|both", "status": "open"}]
+}
+```
+
+**`reporter`에게 전달할 실행 결과 요약 (Markdown):**
 ```
 플랫폼: iOS {버전} / Android {버전}
 기기: {에뮬레이터명 또는 실물 기기 모델}

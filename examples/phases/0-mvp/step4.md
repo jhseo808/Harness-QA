@@ -64,10 +64,11 @@ npx playwright test --reporter=html
    - testcase/, tests/, pages/, reports/ 4개 디렉토리가 모두 존재하는가?
    - POM이 Page 클래스 형태로 캡슐화되어 있는가?
    - 로케이터가 `getByRole()` 우선으로 작성되었는가?
-3. 결과에 따라 `phases/0-mvp/index.json`의 step 4를 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "E2E 테스트 N개 통과. todo-create, todo-status 시나리오 검증 완료. reports/index.html 생성."`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
-   - 앱 서버 미실행 등 환경 문제 → `"status": "blocked"`, `"blocked_reason": "구체적 사유"`
+3. AC 결과에 따라 `phases/0-mvp/step4-result.json` 파일을 작성한다
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "E2E 테스트 N개 통과. todo-create, todo-status 시나리오 검증 완료.", "artifacts": ["qa-output/playwright-result.md", "tests/todo-create.spec.ts", "tests/todo-status.spec.ts"]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 앱 서버 미실행 등 환경 문제 → `{"status": "blocked", "blocked_reason": "구체적 사유"}`
 
 ## 금지사항
 

@@ -77,25 +77,28 @@
 **사용 가능한 agent 값:**
 | agent 값 | 역할 |
 |----------|------|
+| `qa/qa-lead` | QA 전략·활성화 agent 결정·품질 게이트 확정 (선택, 보통 step 0) |
+| `qa/requirements-analyst` | 요구사항 분석 및 AC 작성 |
+| `qa/test-case-designer` | 테스트케이스 설계 |
 | `qa/playwright` | 웹 UI 자동화 (Playwright) |
 | `qa/appium` | 모바일 앱 자동화 (Appium) |
 | `qa/api-tester` | REST/GraphQL API 테스트 |
 | `qa/ai-service-tester` | AI 서비스 품질 테스트 |
 | `qa/performance-tester` | 성능/부하 테스트 |
 | `qa/security-tester` | 보안/취약점 테스트 |
-| `qa/requirements-analyst` | 요구사항 분석 및 AC 작성 |
-| `qa/test-case-designer` | 테스트케이스 설계 |
 | `qa/reporter` | 테스트 결과 보고서 작성 |
 
 상태 전이와 자동 기록 필드:
 
-| 전이 | 기록되는 필드 | 기록 주체 |
+| 전이 | 기록되는 필드 | 기록 흐름 |
 |------|-------------|----------|
-| → `completed` | `completed_at`, `summary` | Claude 세션 (summary), execute.py (timestamp) |
-| → `error` | `failed_at`, `error_message` | Claude 세션 (message), execute.py (timestamp) |
-| → `blocked` | `blocked_at`, `blocked_reason` | Claude 세션 (reason), execute.py (timestamp) |
+| → `completed` | `summary`, `artifacts`, `completed_at` | agent가 `step{N}-result.json`에 작성 → execute.py가 index.json에 반영 |
+| → `error` | `error_message`, `failed_at` | agent가 `step{N}-result.json`에 작성 → execute.py가 index.json에 반영 |
+| → `blocked` | `blocked_reason`, `blocked_at` | agent가 `step{N}-result.json`에 작성 → execute.py가 index.json에 반영 |
 
-`summary`는 step 완료 시 산출물을 한 줄로 요약한 것으로, execute.py가 다음 step 프롬프트에 컨텍스트로 누적 전달한다. 따라서 다음 step에 유용한 정보(생성된 파일, 핵심 결정 등)를 담아야 한다.
+**핵심 계약:** agent는 `step{N}-result.json`만 작성하고 `index.json`은 절대 수정하지 않는다. execute.py가 result 파일을 읽어 index.json을 갱신한다. 상태 전환 시 이전 상태의 stale 필드(예: blocked → completed 시 `blocked_reason`)는 execute.py가 자동으로 제거한다.
+
+`summary`는 다음 step 프롬프트에 컨텍스트로 누적 전달되므로 생성된 파일 경로, 핵심 결정 등 유용한 정보를 담아야 한다. `artifacts` 배열에는 실제로 생성한 파일 경로를 명시한다.
 
 `created_at`은 execute.py가 최초 실행 시 task 레벨에 한 번만 기록한다. step 레벨의 `started_at`도 execute.py가 각 step 시작 시 자동 기록한다. 생성 시 넣지 않는다.
 
@@ -133,10 +136,10 @@
    - ARCHITECTURE.md 디렉토리 구조를 따르는가?
    - ADR 기술 스택을 벗어나지 않았는가?
    - CLAUDE.md CRITICAL 규칙을 위반하지 않았는가?
-3. 결과에 따라 `phases/{task-name}/index.json`의 해당 step을 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "산출물 한 줄 요약"`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
-   - 사용자 개입 필요 (API 키, 외부 인증, 수동 설정 등) → `"status": "blocked"`, `"blocked_reason": "구체적 사유"` 후 즉시 중단
+3. 작업 완료 후 `step{N}-result.json` 파일을 작성한다 (index.json은 하네스가 자동 업데이트):
+   - 성공 → `{"status": "completed", "summary": "산출물 한 줄 요약", "artifacts": ["파일 경로"]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 사용자 개입 필요 (API 키, 외부 인증, 수동 설정 등) → `{"status": "blocked", "blocked_reason": "구체적 사유"}`
 
 ## 금지사항
 
@@ -158,7 +161,7 @@ execute.py가 자동으로 처리하는 것:
 - 가드레일 주입 — CLAUDE.md + docs/*.md 내용을 매 step 프롬프트에 포함
 - 컨텍스트 누적 — 완료된 step의 summary를 다음 step 프롬프트에 전달
 - 자가 교정 — 실패 시 최대 3회 재시도하며, 이전 에러 메시지를 프롬프트에 피드백
-- 2단계 커밋 — 코드 변경(`feat`)과 메타데이터(`chore`)를 분리 커밋
+- 2단계 커밋 — 코드 변경(`feat`)과 메타데이터·QA 산출물(`chore`, `qa-output/` 포함)을 분리 커밋
 - 타임스탬프 — started_at, completed_at, failed_at, blocked_at 자동 기록
 
 에러 복구:

@@ -1,0 +1,43 @@
+{
+  "project": "my-todo-app",
+  "phase": "1-qa-cycle",
+  "created_at": "2025-05-21T09:00:00+0900",
+  "steps": [
+    {
+      "step": 0,
+      "name": "qa-strategy",
+      "status": "pending",
+      "agent": "qa/qa-lead"
+    },
+    {
+      "step": 1,
+      "name": "requirements-analysis",
+      "status": "pending",
+      "agent": "qa/requirements-analyst"
+    },
+    {
+      "step": 2,
+      "name": "test-case-design",
+      "status": "pending",
+      "agent": "qa/test-case-designer"
+    },
+    {
+      "step": 3,
+      "name": "api-testing",
+      "status": "pending",
+      "agent": "qa/api-tester"
+    },
+    {
+      "step": 4,
+      "name": "web-ui-testing",
+      "status": "pending",
+      "agent": "qa/playwright"
+    },
+    {
+      "step": 5,
+      "name": "reporting",
+      "status": "pending",
+      "agent": "qa/reporter"
+    }
+  ]
+}

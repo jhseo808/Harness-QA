@@ -8,8 +8,18 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 품질 게이트를 여기서 가져옴
+  - 없으면 `_base.md`의 기본 품질 게이트 적용
+
 모든 실행 agent의 결과물:
-- 각 agent의 실행 결과 요약 (통과/실패 케이스, 발견된 결함)
+- 각 agent의 구조화 요약 JSON (있으면 우선 사용, 없으면 Markdown fallback):
+  - `qa-output/playwright-summary.json`
+  - `qa-output/appium-summary.json`
+  - `qa-output/api-test-summary.json`
+  - `qa-output/ai-test-summary.json`
+  - `qa-output/performance-summary.json`
+  - `qa-output/security-summary.json`
+- 각 agent의 Markdown 결과 리포트 (`qa-output/*-result.md`) — JSON에 없는 상세 내용 보완용
 - `requirements-analyst`의 테스트 범위 및 리스크 분석 문서
 - `test-case-designer`의 커버리지 매트릭스
 
@@ -104,6 +114,8 @@ Smoke 수트 통과율 = Smoke 통과 케이스 / 전체 Smoke 케이스 × 100%
 ---
 
 ## 출력 (Output): 최종 테스트 보고서
+
+저장 위치: `qa-output/release-report.md`
 
 ```markdown
 # 테스트 결과 보고서

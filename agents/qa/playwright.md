@@ -10,6 +10,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 브라우저 매트릭스 범위 확인 (Chromium만 / 크로스 브라우저)
+  - 이번 사이클 품질 게이트의 Smoke 통과율 기준 확인
+  - 범위 제약 확인 → 제외된 플로우 생략
+
 `test-case-designer`로부터:
 - 구현 대상 테스트케이스 ID 목록과 수트 분류 (Smoke / Regression / E2E)
 - 각 케이스의 선행 조건, 입력값, 예상 결과
@@ -301,11 +306,11 @@ project/
 │   └── [feature].md          ← TC 문서 (사람이 읽는 문서)
 ├── tests/
 │   └── [feature].spec.ts     ← Playwright 테스트 코드
-├── pages/
-│   └── [feature]-page.ts     ← Page Object Model
-└── reports/
-    └── [feature]-result.md   ← 테스트 결과 리포트
+└── pages/
+    └── [feature]-page.ts     ← Page Object Model
 ```
+
+테스트 실행 결과 리포트는 프로젝트 구조가 아닌 `qa-output/playwright-result.md`에 작성한다 (산출물 경로 규약).
 
 **feature 네이밍 규칙 (URL 경로에서 추출):**
 - `https://example.com/` → `main`
@@ -486,7 +491,7 @@ npx playwright test tests/melon-login.spec.ts
 npx playwright show-report
 ```
 
-**결과 리포트 (`reports/[feature]-result.md`):**
+**결과 리포트 (`qa-output/playwright-result.md`):**
 ```
 [테스트 결과 요약]
 - 실행일: YYYY-MM-DD
@@ -586,7 +591,7 @@ qa-autopilot 실행 후 아래 파일을 보장한다:
 | TC 문서 | `testcase/[feature].md` | 항상 최신화 |
 | 테스트 코드 | `tests/[feature].spec.ts` | 항상 최신화 |
 | Page Object | `pages/[feature]-page.ts` | 항상 최신화 |
-| 결과 리포트 | `reports/[feature]-result.md` | 실행 후 최신 반영 |
+| 결과 리포트 | `qa-output/playwright-result.md` | 실행 후 최신 반영 |
 | trace 파일 | `test-results/` | 실패 분석 필요 시만 생성 |
 | video 파일 | `test-results/` | 시각 증거 필요 시만 생성 |
 
@@ -599,7 +604,22 @@ qa-autopilot 실행 후 아래 파일을 보장한다:
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 요약:**
+저장 위치: `qa-output/playwright-result.md` (코드 파일은 `tests/`, `pages/`, `testcase/` 구조 유지)
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/playwright-summary.json`):**
+```json
+{
+  "agent": "playwright",
+  "total": N, "passed": N, "failed": N, "blocked": N,
+  "smoke_pass_rate_pct": N,
+  "flaky_count": N,
+  "p0_defects": N, "p1_defects": N,
+  "release_gate": "pass|fail",
+  "defects": [{"id": "BUG-XXX", "title": "...", "severity": "P0", "status": "open"}]
+}
+```
+
+**`reporter`에게 전달할 요약 (Markdown):**
 ```
 총 케이스: N | 통과: N | 실패: N | 플레이키: N
 Smoke 수트 통과율: N%

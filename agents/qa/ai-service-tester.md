@@ -8,6 +8,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 이번 사이클 AI 테스트 우선 차원 확인 (안전성 집중 / 성능 집중 / 전체)
+  - 품질 게이트의 안전성 통과 기준 확인
+  - 범위 제약 확인 → 제외된 테스트 차원 생략
+
 `test-case-designer`로부터:
 - 구현 대상 테스트케이스 ID 목록
 - AI 서비스 명세 (사용 모델, 시스템 프롬프트, 허용/금지 행동 목록)
@@ -274,7 +279,22 @@ AI가 자사 서비스의 기능, 가격, 정책을 잘못 안내하는 경우 �
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 실행 결과 요약:**
+저장 위치: `qa-output/ai-test-result.md`
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/ai-test-summary.json`):**
+```json
+{
+  "agent": "ai-service-tester",
+  "total": N, "passed": N, "failed": N,
+  "safety_block_rate_pct": N,
+  "hallucination_count": N,
+  "p0_defects": N, "p1_defects": N,
+  "release_gate": "pass|fail",
+  "defects": [{"id": "AI-XXX", "title": "...", "severity": "P0", "status": "open"}]
+}
+```
+
+**`reporter`에게 전달할 실행 결과 요약 (Markdown):**
 ```
 테스트 실행 일시: {datetime}
 테스트 모델/버전: {model ID}

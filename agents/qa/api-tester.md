@@ -8,6 +8,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 이번 사이클 API 테스트 범위 확인 (보안 포커스 여부, IDOR 필수 여부)
+  - 품질 게이트 확인 (응답시간 SLA 기준)
+  - 범위 제약 확인 → 제외된 엔드포인트 생략
+
 `test-case-designer`로부터:
 - 구현 대상 테스트케이스 ID 목록 및 상세 명세
 - API 스펙 문서 경로 (OpenAPI/Swagger 또는 GraphQL 스키마)
@@ -208,7 +213,20 @@ GraphQL은 REST와 다른 취약점 패턴을 갖는다.
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 실행 결과 요약:**
+저장 위치: `qa-output/api-test-result.md`
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/api-test-summary.json`):**
+```json
+{
+  "agent": "api-tester",
+  "total": N, "passed": N, "failed": N, "blocked": N,
+  "p0_defects": N, "p1_defects": N,
+  "release_gate": "pass|fail",
+  "defects": [{"id": "BUG-XXX", "title": "...", "severity": "P0", "endpoint": "POST /api/...", "status": "open"}]
+}
+```
+
+**`reporter`에게 전달할 실행 결과 요약 (Markdown):**
 ```
 총 케이스: N | 통과: N | 실패: N | 차단: N
 인증/인가 테스트: 통과 N / 실패 N

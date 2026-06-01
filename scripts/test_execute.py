@@ -239,12 +239,6 @@ class TestLoadAgent:
             result = executor._load_agent({"agent": "qa/playwright"})
         assert "# Playwright Agent" in result
 
-    def test_base_file_only(self, executor, tmp_project):
-        self._make_agents(tmp_project, base_content="# QA Base")
-        with patch.object(ex, "ROOT", tmp_project):
-            result = executor._load_agent({"agent": "qa/playwright"})
-        assert "# QA Base" in result
-
     def test_base_and_agent_combined(self, executor, tmp_project):
         self._make_agents(tmp_project, base_content="# QA Base", agent_content="# Playwright Agent")
         with patch.object(ex, "ROOT", tmp_project):
@@ -264,10 +258,11 @@ class TestLoadAgent:
             result = executor._load_agent({"agent": "qa/playwright"})
         assert "---" in result
 
-    def test_nonexistent_agent_returns_empty(self, executor, tmp_project):
+    def test_nonexistent_agent_exits(self, executor, tmp_project):
         with patch.object(ex, "ROOT", tmp_project):
-            result = executor._load_agent({"agent": "qa/nonexistent"})
-        assert result == ""
+            with pytest.raises(SystemExit) as exc_info:
+                executor._load_agent({"agent": "qa/nonexistent"})
+        assert exc_info.value.code == 1
 
 
 # ---------------------------------------------------------------------------
@@ -310,43 +305,44 @@ class TestBuildStepContext:
 
 class TestBuildPreamble:
     def test_includes_project_name(self, executor):
-        result = executor._build_preamble("", "")
+        result = executor._build_preamble(2, "", "")
         assert "TestProject" in result
 
     def test_includes_guardrails(self, executor):
-        result = executor._build_preamble("GUARD_CONTENT", "")
+        result = executor._build_preamble(2, "GUARD_CONTENT", "")
         assert "GUARD_CONTENT" in result
 
     def test_includes_step_context(self, executor):
         ctx = "## 이전 Step 산출물\n\n- Step 0: done"
-        result = executor._build_preamble("", ctx)
+        result = executor._build_preamble(2, "", ctx)
         assert "이전 Step 산출물" in result
 
-    def test_includes_commit_example(self, executor):
-        result = executor._build_preamble("", "")
-        assert "feat(mvp):" in result
+    def test_no_commit_instruction(self, executor):
+        result = executor._build_preamble(2, "", "")
+        assert "커밋하라" not in result
 
     def test_includes_rules(self, executor):
-        result = executor._build_preamble("", "")
+        result = executor._build_preamble(2, "", "")
         assert "작업 규칙" in result
         assert "AC" in result
 
     def test_no_retry_section_by_default(self, executor):
-        result = executor._build_preamble("", "")
+        result = executor._build_preamble(2, "", "")
         assert "이전 시도 실패" not in result
 
     def test_retry_section_with_prev_error(self, executor):
-        result = executor._build_preamble("", "", prev_error="타입 에러 발생")
+        result = executor._build_preamble(2, "", "", prev_error="타입 에러 발생")
         assert "이전 시도 실패" in result
         assert "타입 에러 발생" in result
 
-    def test_includes_max_retries(self, executor):
-        result = executor._build_preamble("", "")
-        assert str(ex.StepExecutor.MAX_RETRIES) in result
+    def test_result_file_path_in_instructions(self, executor):
+        result = executor._build_preamble(2, "", "")
+        assert "step2-result.json" in result
 
-    def test_includes_index_path(self, executor):
-        result = executor._build_preamble("", "")
-        assert "/phases/0-mvp/index.json" in result
+    def test_no_index_json_write_instruction(self, executor):
+        # executor가 index.json을 직접 관리하므로 Claude에게 수정 지시하지 않음
+        result = executor._build_preamble(2, "", "")
+        assert "index.json은 수정하지 말 것" in result
 
 
 # ---------------------------------------------------------------------------
@@ -634,3 +630,97 @@ class TestCheckBlockers:
         with pytest.raises(SystemExit) as exc_info:
             inst._check_blockers()
         assert exc_info.value.code == 2
+
+
+# ---------------------------------------------------------------------------
+# _validate_step_result
+# ---------------------------------------------------------------------------
+
+class TestValidateStepResult:
+    def test_valid_completed(self):
+        assert ex.StepExecutor._validate_step_result(
+            {"status": "completed", "summary": "작업 완료"}
+        ) is None
+
+    def test_valid_completed_with_artifacts(self):
+        assert ex.StepExecutor._validate_step_result(
+            {"status": "completed", "summary": "작업 완료", "artifacts": ["a.py", "b.py"]}
+        ) is None
+
+    def test_valid_error(self):
+        assert ex.StepExecutor._validate_step_result(
+            {"status": "error", "error_message": "빌드 실패"}
+        ) is None
+
+    def test_valid_blocked(self):
+        assert ex.StepExecutor._validate_step_result(
+            {"status": "blocked", "blocked_reason": "API 키 없음"}
+        ) is None
+
+    def test_invalid_status(self):
+        err = ex.StepExecutor._validate_step_result({"status": "unknown"})
+        assert err is not None
+        assert "unknown" in err
+
+    def test_missing_status(self):
+        err = ex.StepExecutor._validate_step_result({})
+        assert err is not None
+
+    def test_completed_empty_summary(self):
+        err = ex.StepExecutor._validate_step_result({"status": "completed", "summary": ""})
+        assert err is not None
+        assert "summary" in err
+
+    def test_completed_whitespace_summary(self):
+        err = ex.StepExecutor._validate_step_result({"status": "completed", "summary": "   "})
+        assert err is not None
+
+    def test_completed_artifacts_not_list(self):
+        err = ex.StepExecutor._validate_step_result(
+            {"status": "completed", "summary": "done", "artifacts": "file.py"}
+        )
+        assert err is not None
+        assert "list" in err
+
+    def test_error_empty_message(self):
+        err = ex.StepExecutor._validate_step_result({"status": "error", "error_message": ""})
+        assert err is not None
+
+    def test_blocked_empty_reason(self):
+        err = ex.StepExecutor._validate_step_result({"status": "blocked", "blocked_reason": ""})
+        assert err is not None
+
+
+# ---------------------------------------------------------------------------
+# _read_step_result
+# ---------------------------------------------------------------------------
+
+class TestReadStepResult:
+    def test_missing_file_returns_pending(self, executor):
+        result = executor._read_step_result(99)
+        assert result["status"] == "pending"
+        assert "_parse_error" in result
+
+    def test_valid_completed(self, executor):
+        data = {"status": "completed", "summary": "작업 완료", "artifacts": ["a.py"]}
+        (executor._phase_dir / "step2-result.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+        result = executor._read_step_result(2)
+        assert result["status"] == "completed"
+        assert result["summary"] == "작업 완료"
+
+    def test_invalid_json_returns_pending(self, executor):
+        (executor._phase_dir / "step2-result.json").write_text("not json", encoding="utf-8")
+        result = executor._read_step_result(2)
+        assert result["status"] == "pending"
+        assert "_parse_error" in result
+
+    def test_schema_violation_returns_pending(self, executor):
+        data = {"status": "completed", "summary": ""}  # empty summary
+        (executor._phase_dir / "step2-result.json").write_text(
+            json.dumps(data), encoding="utf-8"
+        )
+        result = executor._read_step_result(2)
+        assert result["status"] == "pending"
+        assert "_parse_error" in result

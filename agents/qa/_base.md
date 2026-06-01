@@ -25,22 +25,6 @@
 
 ---
 
-## 결함 라이프사이클 (Defect Lifecycle)
-
-```
-[발견] → Open
-    → [개발팀 확인] → In Progress
-        → [수정 완료] → Fixed
-            → [QA 재검증 통과] → Closed
-            → [QA 재검증 실패] → Reopen → In Progress
-        → [재현 불가/설계대로] → Won't Fix / By Design
-    → [중복 발견] → Duplicate → Closed
-```
-
-모든 결함은 BUG-{번호} 형식으로 추적하며, 상태 변경 시 담당자 지정과 코멘트를 반드시 남긴다.
-
----
-
 ## 테스트 ID 명명 규칙
 
 ```
@@ -48,60 +32,7 @@
 예: WEB-LOGIN-001, MOB-PAYMENT-003, API-AUTH-012, AI-SAFETY-005
 ```
 
-도메인 코드:
-- `WEB` — 웹 UI (Playwright)
-- `MOB` — 모바일 앱 (Appium)
-- `API` — REST/GraphQL API
-- `AI` — AI 서비스
-- `PERF` — 성능
-- `SEC` — 보안
-
----
-
-## 테스트 수트 계층 구조
-
-| 수트 | 목적 | 실행 시점 | 실행 시간 목표 | 포함 케이스 |
-|------|------|----------|--------------|------------|
-| **Smoke** | 시스템이 기본 동작하는지 빠르게 확인 | 모든 배포 직후 | < 5분 | P0 핵심 플로우만 |
-| **Sanity** | 변경된 기능 주변만 빠르게 검증 | 버그 수정 후 | < 15분 | 변경 관련 P0/P1 |
-| **Regression** | 기존 기능이 깨지지 않았음을 전체 검증 | 릴리스 전, 야간 | < 60분 | 전체 자동화 케이스 |
-| **E2E** | 실제 사용자 시나리오 완전 검증 | 릴리스 전 | < 30분 | 주요 사용자 여정 |
-| **Exploratory** | 자동화가 놓친 창의적 결함 탐색 | 스프린트 종료 전 | 시간 기반 (1~2h) | 수동, 구조 없음 |
-
----
-
-## 테스트 환경 티어 (Environment Tiers)
-
-| 환경 | 용도 | 데이터 | 테스트 허용 유형 |
-|------|------|--------|----------------|
-| **Local (개발자)** | 개발 중 단위 테스트 | 목(mock)/픽스처 | Unit, Integration |
-| **Staging** | QA 팀 전체 테스트 | 프로덕션 유사 익명화 데이터 | 모든 유형 (성능/보안 포함) |
-| **Pre-prod** | 릴리스 최종 검증 | 프로덕션 복제 스냅샷 | Smoke, E2E만 |
-| **Production** | 릴리스 후 모니터링 | 실제 데이터 | Smoke (readonly)만 |
-
-**규칙**: 성능 스트레스 테스트, 보안 침투 테스트는 **Staging 환경에서만** 실행한다.
-
----
-
-## Agent 간 데이터 흐름
-
-```
-requirements-analyst
-        ↓ [테스트 범위 문서, 리스크 매트릭스, 테스트 전략]
-test-case-designer
-        ↓ [테스트케이스 목록, 테스트 데이터, 커버리지 매트릭스]
-        ├→ playwright         (웹 UI 자동화)
-        ├→ appium             (모바일 앱 자동화)
-        ├→ api-tester         (API 레이어)
-        ├→ ai-service-tester  (AI/ML 서비스)
-        ├→ performance-tester (부하/성능)
-        └→ security-tester    (보안/취약점)
-                ↓ [실행 결과, 발견된 결함 목록]
-            reporter
-                ↓ [최종 테스트 보고서 + 릴리스 권고]
-```
-
-각 agent는 이전 agent의 산출물을 입력으로 받아 작업하며, 자신의 산출물이 다음 agent에게 어떻게 사용될지 항상 인식한다.
+도메인 코드: `WEB` (Playwright), `MOB` (Appium), `API` (REST/GraphQL), `AI` (AI 서비스), `PERF` (성능), `SEC` (보안)
 
 ---
 
@@ -136,40 +67,44 @@ ID: {BUG-번호}
 
 ---
 
-## CI/CD 통합 지점
+## 산출물 경로 규약
 
-```yaml
-# 배포 파이프라인에서 QA 자동화가 실행되는 시점
-on_pull_request:
-  - Smoke 수트 실행 (< 5분, 필수 통과)
+모든 agent는 아래 경로에 산출물을 작성한다. 이 경로가 `step{N}-result.json`의 `artifacts` 필드에 들어가야 한다.
 
-on_merge_to_staging:
-  - Sanity 수트 실행 (< 15분, 필수 통과)
-  - API 테스트 전체 실행
+| Agent | 산출물 파일 |
+|-------|-----------|
+| qa-lead | `qa-output/qa-strategy.md` |
+| requirements-analyst | `qa-output/test-strategy.md` |
+| test-case-designer | `qa-output/test-cases.md`, `qa-output/coverage-matrix.md` |
+| playwright | `qa-output/playwright-result.md`, `qa-output/playwright-summary.json` |
+| appium | `qa-output/appium-result.md`, `qa-output/appium-summary.json` |
+| api-tester | `qa-output/api-test-result.md`, `qa-output/api-test-summary.json` |
+| ai-service-tester | `qa-output/ai-test-result.md`, `qa-output/ai-test-summary.json` |
+| performance-tester | `qa-output/performance-result.md`, `qa-output/performance-summary.json` |
+| security-tester | `qa-output/security-result.md`, `qa-output/security-summary.json` |
+| reporter | `qa-output/release-report.md` |
 
-nightly_cron:
-  - Regression 수트 전체 실행
-  - 성능 테스트 (Baseline)
-  - 보안 스캔
-
-on_release_candidate:
-  - E2E 전체 실행
-  - 성능 테스트 (Load)
-  - 보안 테스트 전체
-  - 최종 보고서 생성 (reporter)
-```
+**규칙:**
+- 모든 산출물은 프로젝트 루트 기준 상대 경로 `qa-output/` 아래에 작성한다.
+- `step{N}-result.json` 작성 시 `artifacts` 배열에 실제로 생성한 파일 경로를 명시한다.
+- 파일이 이미 존재하면 덮어쓴다 (append 하지 않는다).
+- 이전 step의 artifacts 경로는 executor가 context에 주입한다. 해당 파일을 직접 Read하여 작업을 이어가라.
 
 ---
 
-## 품질 KPI 목표
+## Step 상태 보고 기준
 
-| 지표 | 목표 | 측정 방법 |
-|------|------|---------|
-| 자동화 커버리지 | ≥ 80% (P0/P1 100%) | 자동화 케이스 / 전체 케이스 |
-| 테스트 통과율 | ≥ 95% | 통과 / 전체 실행 |
-| 결함 탈출율 | < 5% | 프로덕션 발견 결함 / 전체 릴리스 결함 |
-| 평균 결함 수정 시간 | P0 < 4h, P1 < 2일 | Open → Fixed 시간 |
-| 플레이키 테스트 비율 | < 2% | 불안정 케이스 / 전체 자동화 |
+`step{N}-result.json`의 `status` 필드 사용 기준:
+
+| 상황 | status | 필드 |
+|------|--------|------|
+| AC 검증 통과, 산출물 생성 완료 | `completed` | summary(필수), artifacts(선택) |
+| 기술적 오류, 코드/도구 문제 — 재시도로 해결 가능할 수 있음 | `error` | error_message(필수) |
+| 사람 개입 없이는 진행 불가 — API 키, 환경 미준비, 요구사항 미확정 | `blocked` | blocked_reason(필수) |
+
+**error vs blocked 판단 기준:**
+- 재시도하면 다른 결과가 나올 가능성이 있으면 → `error`
+- 외부 조건이 바뀌지 않는 한 재시도해도 똑같이 실패 → `blocked`
 
 ---
 

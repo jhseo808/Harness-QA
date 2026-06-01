@@ -69,9 +69,11 @@ npm run build   # 타입 에러 없음
 2. 아키텍처 체크리스트를 확인한다:
    - 타입이 `types/` 폴더에 분리되어 있는가?
    - `strict: true` 환경에서 컴파일 에러가 없는가?
-3. 결과에 따라 `phases/0-mvp/index.json`의 step 1을 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "types/todo.ts 및 types/todo.schema.ts 생성. Todo, TodoStatus, CreateTodoInput, UpdateTodoInput 타입 정의 완료."`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
+3. AC 결과에 따라 `phases/0-mvp/step1-result.json` 파일을 작성한다
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "types/todo.ts 및 types/todo.schema.ts 생성. Todo, TodoStatus, CreateTodoInput, UpdateTodoInput 타입 정의 완료.", "artifacts": ["types/todo.ts", "types/todo.schema.ts"]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 환경 문제로 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
 
 ## 금지사항
 

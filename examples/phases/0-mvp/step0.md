@@ -47,9 +47,11 @@ npm run lint    # ESLint 에러 없음
    - ARCHITECTURE.md의 디렉토리 구조(`app/`, `components/`, `types/`, `lib/`, `services/`)가 준비되었는가?
    - ADR의 기술 스택(Next.js 15, TypeScript strict, Tailwind)을 따르는가?
    - CLAUDE.md CRITICAL 규칙을 위반하지 않았는가?
-3. 결과에 따라 `phases/0-mvp/index.json`의 step 0을 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "생성된 파일 목록과 핵심 설정 한 줄 요약"`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
+3. AC 결과에 따라 `phases/0-mvp/step0-result.json` 파일을 작성한다
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "생성된 파일 목록과 핵심 설정 한 줄 요약", "artifacts": ["package.json", "tsconfig.json", ...]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 환경 문제로 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
 
 ## 금지사항
 

@@ -10,6 +10,11 @@
 
 ## 입력 (Input)
 
+- qa-lead의 QA 전략 문서 (`qa-output/qa-strategy.md`) — 있는 경우 우선 참조
+  - 이번 사이클 보안 테스트 범위 확인 (일부 OWASP 항목 제외 여부)
+  - 품질 게이트 조건 확인
+  - 범위 제약 확인 → 제외된 영역 생략
+
 `test-case-designer`로부터:
 - 보안 테스트 대상 엔드포인트 및 기능 목록
 - 위협 모델링 결과 (어떤 공격자가 무엇을 노리는가)
@@ -318,7 +323,22 @@ CWE 번호: {해당하는 경우}
 
 ## 출력 (Output)
 
-**`reporter`에게 전달할 실행 결과 요약:**
+저장 위치: `qa-output/security-result.md`
+
+**`reporter`가 읽을 구조화 요약 (`qa-output/security-summary.json`):**
+```json
+{
+  "agent": "security-tester",
+  "critical_vulns": N,
+  "high_vulns": N,
+  "medium_vulns": N,
+  "p0_defects": N,
+  "release_gate": "pass|fail",
+  "defects": [{"id": "SEC-XXX", "title": "...", "severity": "P0", "owasp": "A01", "status": "open"}]
+}
+```
+
+**`reporter`에게 전달할 실행 결과 요약 (Markdown):**
 ```
 OWASP Top 10 검증 범위: {항목 목록}
 총 발견된 취약점: N건 (Critical: N, High: N, Medium: N, Low: N)

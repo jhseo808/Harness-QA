@@ -79,9 +79,11 @@ npm test        # 컴포넌트 테스트 통과
    - 컴포넌트가 `components/` 폴더에 분리되어 있는가?
    - API 호출이 `app/page.tsx`에서만 이루어지는가? (컴포넌트 내부 API 호출 없음)
    - 접근성 속성(`aria-*`)이 체크박스에 포함되어 있는가?
-3. 결과에 따라 `phases/0-mvp/index.json`의 step 3을 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "생성된 컴포넌트 목록과 테스트 커버리지 한 줄 요약"`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
+3. AC 결과에 따라 `phases/0-mvp/step3-result.json` 파일을 작성한다
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "생성된 컴포넌트 목록과 테스트 커버리지 한 줄 요약", "artifacts": ["components/TodoItem.tsx", "components/TodoList.tsx", "components/TodoForm.tsx"]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 환경 문제로 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
 
 ## 금지사항
 

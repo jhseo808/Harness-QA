@@ -84,9 +84,11 @@ npm test        # API 라우트 테스트 통과
    - Zod 스키마를 통한 입력 검증이 이루어지는가?
    - `id`, `createdAt`, `updatedAt`이 서버에서만 생성되는가?
    - CLAUDE.md CRITICAL 규칙을 위반하지 않았는가?
-3. 결과에 따라 `phases/0-mvp/index.json`의 step 2를 업데이트한다:
-   - 성공 → `"status": "completed"`, `"summary": "생성된 파일 목록과 테스트 커버리지 한 줄 요약"`
-   - 수정 3회 시도 후에도 실패 → `"status": "error"`, `"error_message": "구체적 에러 내용"`
+3. AC 결과에 따라 `phases/0-mvp/step2-result.json` 파일을 작성한다
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "생성된 파일 목록과 테스트 커버리지 한 줄 요약", "artifacts": ["app/api/todos/route.ts", "app/api/todos/[id]/route.ts"]}`
+   - 수정 3회 시도 후에도 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+   - 환경 문제로 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
 
 ## 금지사항
 

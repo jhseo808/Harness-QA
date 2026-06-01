@@ -12,7 +12,7 @@ AI 코딩 도구는 단일 요청에는 강하지만, 수십 개의 순서가 �
 
 ### 해결
 
-이 프레임워크는 **Step → 실행 → 검증 → 커밋** 사이클을 자동화합니다. 각 Step은 마크다운 파일로 작성된 명세이고, 하네스가 Claude에게 이를 순차적으로 전달하여 코드를 생성하고, AC(수용 기준)를 직접 검증하고, 결과를 `index.json`에 기록합니다. 실패 시 최대 3회 자가 교정합니다.
+이 프레임워크는 **Step → 실행 → 검증 → 커밋** 사이클을 자동화합니다. 각 Step은 마크다운 파일로 작성된 명세이고, 하네스가 Claude에게 이를 순차적으로 전달하여 코드를 생성하고, AC(수용 기준)를 직접 검증하고, 결과를 `step{N}-result.json`에 기록합니다. 하네스가 이를 읽어 `index.json`을 갱신하며, 실패 시 최대 3회 자가 교정합니다.
 
 ```
 phases/0-mvp/
@@ -181,6 +181,7 @@ execute.py 시작
 
 | 에이전트 | 역할 |
 |---------|------|
+| `qa/qa-lead` | QA 전략 수립, 활성화 agent 결정, 품질 게이트 확정 (선택) |
 | `qa/requirements-analyst` | 요구사항 완전성·일관성·검증가능성 분석 |
 | `qa/test-case-designer` | 동등분할·경계값·상태전이 기법으로 TC 설계 |
 | `qa/playwright` | 웹 UI E2E 자동화 (Page Object Model, playwright-cli 기반) |
@@ -194,16 +195,20 @@ execute.py 시작
 ### 에이전트 간 데이터 흐름
 
 ```
+[qa-lead]  ← 선택. qa-output/qa-strategy.md 산출 (이후 agent들이 참조)
+        ↓
 requirements-analyst
         ↓ [테스트 범위, 리스크 매트릭스, 테스트 전략]
 test-case-designer
         ↓ [TC 목록, 커버리지 매트릭스]
         ├─→ playwright / appium / api-tester
         ├─→ ai-service-tester / performance-tester / security-tester
-                ↓ [실행 결과, 발견 결함]
-            reporter
-                ↓ [릴리스 권고 보고서]
+        │       ↓ [*-result.md + *-summary.json]
+        └──────→ reporter
+                    ↓ [릴리스 권고 보고서 (qa-output/release-report.md)]
 ```
+
+실행 agent(playwright, appium, api-tester 등)는 Markdown 결과 리포트(`*-result.md`)와 함께 구조화 요약(`*-summary.json`)을 `qa-output/`에 작성합니다. reporter는 JSON을 우선 읽고, 없으면 Markdown으로 fallback합니다.
 
 ---
 
@@ -227,8 +232,10 @@ test-case-designer
 
 ```
 feat(0-mvp): step 2 — api-layer    ← 코드 변경사항
-chore(0-mvp): step 2 output        ← index.json, step2-output.json
+chore(0-mvp): step 2 output        ← index.json, step2-result.json, qa-output/*
 ```
+
+`qa-output/` 산출물(전략 문서, 테스트 결과, 릴리스 보고서 등)은 코드 커밋이 아닌 housekeeping 커밋에 포함됩니다. 릴리스 증적으로 저장소에 추적됩니다.
 
 ---
 
@@ -248,8 +255,8 @@ chore(0-mvp): step 2 output        ← index.json, step2-output.json
 ## Acceptance Criteria
 검증 가능한 커맨드 (예: npm test, npm run build)
 
-## 검증 절차
-AC 실행 후 index.json 업데이트 방법 명시
+## 결과 파일 작성
+작업 완료 후 step{N}-result.json 작성 방법 명시 (index.json은 하네스가 자동 갱신)
 
 ## 금지사항
 하지 말아야 할 것과 그 이유
