@@ -15,11 +15,44 @@
 
 배정된 케이스를 기반으로 E2E 테스트를 작성하고 실행하라.
 
+**CRITICAL: 반드시 아래 순서를 따른다. POM 없이 spec 파일을 작성하지 않는다.**
+
+**작성 순서:**
+1. `pages/` 디렉토리 생성 (없는 경우)
+2. `pages/TodoPage.ts` 생성 — locator와 action 메서드 정의
+3. `tests/todo.spec.ts` 생성 — TodoPage를 import하여 사용
+
 **테스트 대상 플로우:**
 1. 할 일 생성 → 목록 표시 확인
 2. 상태 전이 (pending → in_progress → done)
 3. 할 일 삭제
 4. 빈 입력 제출 시 에러 메시지
+
+**POM 구조 예시:**
+```typescript
+// pages/TodoPage.ts
+export class TodoPage {
+  constructor(private page: Page) {}
+
+  // Locators
+  readonly inputField = this.page.getByRole('textbox', { name: '할 일 입력' });
+  readonly submitButton = this.page.getByRole('button', { name: '추가' });
+
+  // Actions
+  async goto() { await this.page.goto('/'); }
+  async addTodo(text: string) {
+    await this.inputField.fill(text);
+    await this.submitButton.click();
+  }
+}
+
+// tests/todo.spec.ts
+import { TodoPage } from '../pages/TodoPage';
+test.beforeEach(async ({ page }) => {
+  todoPage = new TodoPage(page);
+  await todoPage.goto();
+});
+```
 
 ## Acceptance Criteria
 
@@ -29,6 +62,8 @@ npx playwright test --reporter=list
 ```
 
 `qa-output/playwright-result.md` 작성 완료
+
+`pages/TodoPage.ts` 존재 확인 — 이 파일이 없으면 작업 미완료
 
 ## 결과 파일 작성
 

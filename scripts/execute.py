@@ -171,7 +171,7 @@ class StepExecutor:
         index_rel = f"{phase_rel}/index.json"
 
         self._run_git("add", "-A")
-        self._run_git("reset", "HEAD", "--", output_rel)
+        self._run_git("reset", "HEAD", "--", output_rel)  # output은 두 커밋 모두에서 제외
         self._run_git("reset", "HEAD", "--", result_rel)
         self._run_git("reset", "HEAD", "--", index_rel)
         self._run_git("reset", "HEAD", "--", "qa-output")
@@ -185,6 +185,7 @@ class StepExecutor:
                 print(f"  WARN: 코드 커밋 실패: {r.stderr.strip()}")
 
         self._run_git("add", "-A")
+        self._run_git("reset", "HEAD", "--", output_rel)  # output은 커밋하지 않음
         if self._run_git("diff", "--cached", "--quiet").returncode != 0:
             msg = self.CHORE_MSG.format(phase=self._phase_name, num=step_num)
             r = self._run_git("commit", "-m", msg)
@@ -371,7 +372,7 @@ class StepExecutor:
             "stdout": result.stdout, "stderr": result.stderr,
         }
         out_path = self._phase_dir / f"step{step_num}-output.json"
-        with open(out_path, "w") as f:
+        with open(out_path, "w", encoding="utf-8") as f:
             json.dump(output, f, indent=2, ensure_ascii=False)
 
         return output
@@ -388,7 +389,7 @@ class StepExecutor:
 
     def _check_blockers(self):
         index = self._read_json(self._index_file)
-        for s in reversed(index["steps"]):
+        for s in index["steps"]:
             if s["status"] == "error":
                 print(f"\n  ✗ Step {s['step']} ({s['name']}) failed.")
                 print(f"  Error: {s.get('error_message', 'unknown')}")
@@ -399,7 +400,7 @@ class StepExecutor:
                 print(f"  Reason: {s.get('blocked_reason', 'unknown')}")
                 print(f"  Resolve and reset status to 'pending' to retry.")
                 sys.exit(2)
-            if s["status"] != "pending":
+            if s["status"] == "pending":
                 break
 
     def _ensure_created_at(self):
@@ -419,7 +420,27 @@ class StepExecutor:
         (Path(self._root) / "qa-output").mkdir(exist_ok=True)
 
         for attempt in range(1, self.MAX_RETRIES + 1):
-            # 이전 실행의 stale result를 재사용하지 않도록 매 attempt마다 삭제
+            # 중단 후 재시작 복구: 유효한 completed/blocked result가 이미 있으면 Claude 재호출 없이 사용
+            existing = self._read_step_result(step_num)
+            if existing["status"] in ("completed", "blocked"):
+                result = existing
+                ts = self._stamp()
+                if result["status"] == "completed":
+                    self._apply_step_result(step_num, result, ts)
+                    self._commit_step(step_num, step_name)
+                    print(f"  ✓ Step {step_num}: {step_name} [recovered from previous run]")
+                    if result.get("artifacts"):
+                        print(f"    산출물: {', '.join(result['artifacts'])}")
+                    return True
+                else:
+                    self._apply_step_result(step_num, result, ts)
+                    reason = result.get("blocked_reason", "")
+                    print(f"  ⏸ Step {step_num}: {step_name} blocked [recovered]")
+                    print(f"    Reason: {reason}")
+                    self._update_top_index("blocked")
+                    sys.exit(2)
+
+            # 이전 실패 result를 삭제하고 Claude 재호출
             (self._phase_dir / f"step{step_num}-result.json").unlink(missing_ok=True)
 
             index = self._read_json(self._index_file)

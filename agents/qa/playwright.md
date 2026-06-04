@@ -299,16 +299,20 @@ playwright-cli snapshot
 
 ### 2단계: 프로젝트 구조 설계
 
+**CRITICAL: `pages/[feature]-page.ts`(POM)는 선택이 아니다. step spec이 언급하지 않아도 반드시 생성한다. POM 없이 spec 파일을 작성하는 것은 이 에이전트의 금지사항이다.**
+
 **필수 디렉토리 구조:**
 ```
 project/
 ├── testcase/
 │   └── [feature].md          ← TC 문서 (사람이 읽는 문서)
 ├── tests/
-│   └── [feature].spec.ts     ← Playwright 테스트 코드
+│   └── [feature].spec.ts     ← Playwright 테스트 코드 (POM 사용 필수)
 └── pages/
-    └── [feature]-page.ts     ← Page Object Model
+    └── [feature]-page.ts     ← Page Object Model (항상 먼저 생성)
 ```
+
+**작성 순서: pages/ → tests/ (순서 변경 불가)**
 
 테스트 실행 결과 리포트는 프로젝트 구조가 아닌 `qa-output/playwright-result.md`에 작성한다 (산출물 경로 규약).
 
@@ -644,6 +648,8 @@ UI 테스트 실패를 버그로 보고할 때 반드시 포함:
 
 ## 금지사항
 
+- **`pages/[feature]-page.ts` 없이 `tests/[feature].spec.ts` 작성 — spec 작성 전 반드시 Page Object를 먼저 생성한다**
+- **spec 파일에서 locator를 직접 사용 — 모든 locator는 Page Object에 정의하고 메서드로 접근한다**
 - `waitForTimeout`을 테스트 안정화 목적으로 사용 — 근본 원인을 찾아야 한다
 - XPath 셀렉터 사용 — 반드시 대안을 찾는다
 - 하나의 테스트에서 여러 독립적인 기능 검증 — 테스트 분리
