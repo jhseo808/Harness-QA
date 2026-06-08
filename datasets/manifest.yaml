@@ -1,0 +1,170 @@
+# AI QA dataset manifest
+# This file is the entry point for selecting test suites in ai-qa runs.
+
+version: "1.0"
+dataset_version: "v1.0"
+owner: "ai-qa"
+last_updated: "2026-06-08"
+
+schemas:
+  test_case: "datasets/schemas/test-case.schema.json"
+  result: "datasets/schemas/result.schema.json"
+  rubric: "datasets/schemas/rubric.schema.json"
+  activation_matrix: "datasets/schemas/activation-matrix.schema.json"
+
+rubrics:
+  default:
+    path: "datasets/rubrics/default.yaml"
+    version: "1.0"
+  safety:
+    path: "datasets/rubrics/safety.yaml"
+    version: "1.0"
+  alignment:
+    path: "datasets/rubrics/alignment.yaml"
+    version: "1.0"
+
+case_collections:
+  capability:
+    path: "datasets/test-cases/capability/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "ai-evaluator"
+  hallucination_factual:
+    path: "datasets/test-cases/hallucination/factual/"
+    ai_types: ["generative", "rag"]
+    owner_agent: "gen-quality-tester"
+  hallucination_reference:
+    path: "datasets/test-cases/hallucination/reference/"
+    ai_types: ["generative", "rag"]
+    owner_agent: "gen-quality-tester"
+  hallucination_self_knowledge:
+    path: "datasets/test-cases/hallucination/self-knowledge/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "model-alignment-tester"
+  hallucination_rag_grounding:
+    path: "datasets/test-cases/hallucination/rag-grounding/"
+    ai_types: ["rag"]
+    owner_agent: "rag-retrieval-tester"
+  safety:
+    path: "datasets/test-cases/safety/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "ai-safety-tester"
+    requires_human_review: true
+  injection_direct:
+    path: "datasets/test-cases/injection/direct/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "ai-safety-tester"
+  injection_indirect:
+    path: "datasets/test-cases/injection/indirect/"
+    ai_types: ["rag", "agentic"]
+    owner_agent: "ai-safety-tester"
+  injection_jailbreak:
+    path: "datasets/test-cases/injection/jailbreak/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "model-safety-gate"
+    requires_human_review: true
+  injection_agent_specific:
+    path: "datasets/test-cases/injection/agent-specific/"
+    ai_types: ["agentic"]
+    owner_agent: "agent-execution-tester"
+  feedback:
+    path: "datasets/test-cases/feedback/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "ai-evaluator"
+    requires_human_review: true
+  ab:
+    path: "datasets/test-cases/ab/"
+    ai_types: ["generative", "rag", "agentic"]
+    owner_agent: "ai-evaluator"
+  ai_generated_output:
+    path: "datasets/test-cases/ai-generated-output/"
+    ai_types: ["generative", "agentic"]
+    owner_agent: "ai-generated-output-tester"
+
+suites:
+  smoke:
+    description: "Fast confidence check for AI service wiring and obvious regressions."
+    min_cases: 30
+    collections:
+      capability: 15
+      safety: 10
+      injection_direct: 5
+  release:
+    description: "Default pre-release suite for AI service changes."
+    min_cases: 100
+    collections:
+      capability: 40
+      hallucination_factual: 10
+      hallucination_reference: 5
+      hallucination_self_knowledge: 5
+      safety: 20
+      injection_direct: 10
+      injection_indirect: 10
+  rag_release:
+    description: "Pre-release suite for RAG services."
+    min_cases: 120
+    collections:
+      capability: 25
+      hallucination_rag_grounding: 30
+      safety: 20
+      injection_direct: 10
+      injection_indirect: 20
+      feedback: 15
+  agentic_release:
+    description: "Pre-release suite for tool-calling or agentic systems."
+    min_cases: 120
+    collections:
+      capability: 20
+      safety: 20
+      injection_direct: 10
+      injection_indirect: 20
+      injection_agent_specific: 30
+      feedback: 20
+  model_change:
+    description: "Full model or algorithm change gate."
+    min_cases: 200
+    collections:
+      capability: 60
+      hallucination_factual: 20
+      hallucination_reference: 20
+      hallucination_self_knowledge: 20
+      hallucination_rag_grounding: 20
+      safety: 30
+      injection_jailbreak: 30
+  red_team:
+    description: "Adversarial safety and injection focused suite."
+    min_cases: 100
+    collections:
+      safety: 30
+      injection_direct: 20
+      injection_indirect: 20
+      injection_jailbreak: 20
+      injection_agent_specific: 10
+  nightly:
+    description: "Broad recurring regression suite."
+    min_cases: 300
+    collections:
+      capability: 80
+      hallucination_factual: 30
+      hallucination_reference: 30
+      hallucination_self_knowledge: 20
+      hallucination_rag_grounding: 40
+      safety: 40
+      injection_direct: 20
+      injection_indirect: 20
+      feedback: 20
+
+promotion_policy:
+  feedback_to_regression:
+    required_status: "reviewed"
+    min_occurrences: 2
+    requires_owner_approval: true
+  regression_to_golden:
+    required_stability_runs: 3
+    min_business_impact: "P2"
+    requires_human_review: true
+
+result_storage:
+  root: "datasets/results/"
+  pattern: "datasets/results/{model_id}/{dataset_version}/{run_id}/"
+  append_only: true
+  baseline_promotion_owner: "model-rollout-monitor"

@@ -1,0 +1,30 @@
+{
+  "id": "cap-translation-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "translation",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Translate English to Korean.",
+    "user": "Please send the final report by Friday."
+  },
+  "expected": {
+    "behavior": "translation_preserves_final_report_and_friday",
+    "evaluation_method": "llm_judge",
+    "pass_threshold": 0.8
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "general",
+    "language": "multi",
+    "tags": ["smoke", "translation"]
+  }
+}

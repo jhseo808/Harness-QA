@@ -1,0 +1,51 @@
+{
+  "project": "rag-support-chatbot",
+  "phase": "2-ai-qa-cycle",
+  "description": "RAG 기반 고객 지원 챗봇의 AI QA 사이클 예제",
+  "created_at": "2026-06-08T09:00:00+0900",
+  "steps": [
+    {
+      "step": 0,
+      "name": "ai-qa-strategy",
+      "status": "pending",
+      "agent": "ai-qa/ai-qa-lead"
+    },
+    {
+      "step": 1,
+      "name": "eval-setup",
+      "status": "pending",
+      "agent": "ai-qa/ai-evaluator"
+    },
+    {
+      "step": 2,
+      "name": "rag-pipeline-test",
+      "status": "pending",
+      "agent": "ai-qa/rag-pipeline-tester"
+    },
+    {
+      "step": 3,
+      "name": "rag-retrieval-test",
+      "status": "pending",
+      "agent": "ai-qa/rag-retrieval-tester"
+    },
+    {
+      "step": 4,
+      "name": "perf-test",
+      "status": "pending",
+      "agent": "ai-qa/ai-perf-observability-tester",
+      "note": "step2/3 완료 후 실행. service parallel_group"
+    },
+    {
+      "step": 5,
+      "name": "safety-test",
+      "status": "pending",
+      "agent": "ai-qa/ai-safety-tester"
+    },
+    {
+      "step": 6,
+      "name": "reporting",
+      "status": "pending",
+      "agent": "qa/reporter"
+    }
+  ]
+}

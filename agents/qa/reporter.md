@@ -19,6 +19,14 @@
   - `qa-output/ai-test-summary.json`
   - `qa-output/performance-summary.json`
   - `qa-output/security-summary.json`
+- AI QA 서브팀이 실행된 경우 추가로 읽는다 (존재하는 파일만):
+  - `qa-output/ai-eval-summary.json` — 루브릭/골든셋 평가
+  - `qa-output/gen-quality-summary.json`, `qa-output/gen-context-summary.json` — 생성 AI
+  - `qa-output/rag-pipeline-summary.json`, `qa-output/rag-retrieval-summary.json` — RAG
+  - `qa-output/agent-planning-summary.json`, `qa-output/agent-memory-state-summary.json`, `qa-output/agent-execution-summary.json`, `qa-output/agent-reflection-recovery-summary.json`, `qa-output/agent-action-safety-summary.json`, `qa-output/agent-multi-agent-summary.json` — 에이전틱 AI
+  - `qa-output/model-safety-gate-summary.json`, `qa-output/model-capability-summary.json`, `qa-output/model-alignment-summary.json`, `qa-output/model-compatibility-summary.json`, `qa-output/model-human-eval-summary.json`, `qa-output/model-rollout-summary.json` — 모델 QA
+  - `qa-output/ai-generated-output-summary.json` — AI 생성 코드/테스트케이스/문서 산출물 검증
+  - `qa-output/ai-safety-summary.json`, `qa-output/ai-perf-summary.json` — 공통 AI 안전성/성능
 - 각 agent의 Markdown 결과 리포트 (`qa-output/*-result.md`) — JSON에 없는 상세 내용 보완용
 - `requirements-analyst`의 테스트 범위 및 리스크 분석 문서
 - `test-case-designer`의 커버리지 매트릭스
@@ -109,6 +117,14 @@ Smoke 수트 통과율 = Smoke 통과 케이스 / 전체 Smoke 케이스 × 100%
 - [ ] 보안 Critical 취약점 0건         → {통과/실패}
 - [ ] 성능 P95 응답시간 SLA 충족       → {통과/실패}: P95={N}ms
 - [ ] Smoke 수트 100% 통과            → {통과/실패}
+
+<!-- AI QA 서브팀이 실행된 경우: 아래 항목은 ai-qa-strategy.md의 activation_matrix에서 required인 경우만 평가, skipped이면 N/A로 기재 -->
+- [ ] AI 안전성 100% (ai-safety-summary)               → {통과/실패} — Core, 항상 평가
+- [ ] AI 정확도 ≥90% (ai-eval-summary)                 → {N}% — Core, 항상 평가
+- [ ] RAG 그라운딩율 ≥95% (rag-retrieval-summary)      → {통과/실패/N/A(RAG 아닌 경우)}
+- [ ] 모델 안전 게이트 통과 (model-safety-gate-summary) → {통과/실패/N/A(모델 변경 없는 경우)}
+- [ ] 에이전틱 액션 안전성 (agent-action-safety-summary) → {통과/실패/N/A(에이전틱 없는 경우)}
+- [ ] AI 생성 산출물 검증 (ai-generated-output-summary) → {통과/실패/N/A(대상 없는 경우)}
 ```
 
 ---
@@ -160,7 +176,12 @@ Smoke 수트 통과율 = Smoke 통과 케이스 / 전체 Smoke 케이스 × 100%
 | 웹 자동화 (Playwright) | N | N | N | N | N |
 | 모바일 (Appium) | N | N | N | N | N |
 | API | N | N | N | N | N |
-| AI 서비스 | N | N | N | N | N |
+| AI 서비스 (Smoke) | N | N | N | N | N |
+| AI QA — 생성 AI | N | N | N | N | N |
+| AI QA — RAG | N | N | N | N | N |
+| AI QA — 에이전틱 AI | N | N | N | N | N |
+| AI QA — 모델 변경 | N | N | N | N | N |
+| AI QA — 생성 산출물 | N | N | N | N | N |
 | 성능 | N | N | N | N | N |
 | 보안 | N | N | N | N | N |
 | **합계** | **N** | **N** | **N** | **N** | **N** |
@@ -238,6 +259,11 @@ Smoke 수트 통과율 = Smoke 통과 케이스 / 전체 Smoke 케이스 × 100%
 | 자동화 통과율 95% 이상 | ✅ 충족 / ❌ {N}% |
 | 보안 Critical 0건 | ✅ 충족 / ❌ {N}건 |
 | 성능 P95 SLA 충족 | ✅ 충족 / ❌ P95={N}ms |
+| AI 안전성 100% | ✅ 충족 / ❌ 위반 {N}건 / — N/A |
+| AI 정확도 ≥90% | ✅ {N}% / ❌ {N}% / — N/A |
+| RAG 그라운딩율 ≥95% | ✅ {N}% / ❌ {N}% / — N/A(RAG 아닌 경우) |
+| 모델 안전 게이트 | ✅ 통과 / ❌ 실패 / — N/A(모델 변경 없는 경우) |
+| 에이전틱 액션 안전성 | ✅ 통과 / ❌ 실패 / — N/A(에이전틱 없는 경우) |
 
 ---
 

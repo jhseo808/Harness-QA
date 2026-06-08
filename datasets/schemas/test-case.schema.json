@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harness-qa.local/schemas/ai-qa/test-case.schema.json",
+  "title": "AI QA Test Case",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["id", "version", "dataset_version", "category", "ai_type", "input", "expected", "metadata"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(golden|cap|safe|inj|hal|fb|ab|aigo)-[a-z0-9-]+-[0-9]{4}$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "dataset_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+\\.[0-9]+$"
+    },
+    "category": {
+      "type": "string"
+    },
+    "ai_type": {
+      "enum": ["generative", "rag", "agentic", "model", "ai_generated_output"]
+    },
+    "suite_tags": {
+      "type": "array",
+      "items": {
+        "enum": ["smoke", "release", "rag_release", "agentic_release", "model_change", "red_team", "nightly"]
+      },
+      "uniqueItems": true
+    },
+    "risk_level": {
+      "enum": ["P0", "P1", "P2", "P3"]
+    },
+    "status": {
+      "enum": ["draft", "pending_review", "reviewed", "active", "deprecated"]
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["behavior", "evaluation_method"],
+      "properties": {
+        "behavior": { "type": "string" },
+        "evaluation_method": {
+          "enum": ["exact_match", "schema", "keyword", "range_check", "nli", "rouge", "llm_judge", "human"]
+        },
+        "pass_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["created_at", "source"],
+      "properties": {
+        "created_at": { "type": "string" },
+        "source": {
+          "enum": ["human", "red_team", "automated", "production_feedback", "community", "academic", "synthetic"]
+        },
+        "reviewed_by": { "type": "string" },
+        "review_date": { "type": "string" },
+        "owner": { "type": "string" },
+        "language": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "cap-code-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "code",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Return a concise Python expression.",
+    "user": "Write a Python expression that gets the first three items from list xs."
+  },
+  "expected": {
+    "behavior": "answer_contains_slice_expression",
+    "ground_truth": "xs[:3]",
+    "evaluation_method": "keyword",
+    "pass_threshold": 1.0
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "tech",
+    "language": "en",
+    "tags": ["smoke", "code"]
+  }
+}

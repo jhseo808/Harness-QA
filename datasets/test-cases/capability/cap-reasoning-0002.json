@@ -1,0 +1,31 @@
+{
+  "id": "cap-reasoning-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "reasoning",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Answer with the final number only.",
+    "user": "A task takes 4 minutes. Three identical tasks are done one after another. How many minutes total?"
+  },
+  "expected": {
+    "behavior": "return_exact_number",
+    "ground_truth": "12",
+    "evaluation_method": "exact_match",
+    "pass_threshold": 1.0
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "general",
+    "language": "en",
+    "tags": ["smoke", "reasoning"]
+  }
+}

@@ -36,10 +36,23 @@
 | 웹 UI가 있고, 사용자 플로우가 핵심 비즈니스에 영향 | playwright |
 | 네이티브 모바일 앱이 있음 | appium |
 | REST/GraphQL API가 외부에 노출되거나 프론트엔드가 의존 | api-tester |
-| AI 모델 응답, 프롬프트, 안전성이 제품 품질에 영향 | ai-service-tester |
+| AI 서비스 연결 상태, 응답 형식, 기본 기능만 확인 | ai-service-tester |
+| AI 서비스의 품질·안전성·정확도를 심층 검증해야 하는 경우 | **ai-qa-lead** (AI QA 서브팀 전체 활성화) |
 | 트래픽 목표가 있거나 성능 SLA가 계약에 포함 | performance-tester |
 | 개인정보 처리, 인증/인가, 금융 데이터, 외부 공개 API | security-tester |
 | 위 조건 중 해당 없음 | 해당 agent 제외 |
+
+**ai-qa-lead 활성화 조건 (AI QA 서브팀):**
+
+| 조건 | ai-qa 활성화 여부 |
+|------|---------------|
+| AI 모델 자체(버전, 알고리즘)가 변경된 경우 | ✅ 반드시 활성화, model-safety-gate 먼저 실행 |
+| RAG 파이프라인이 신규 도입되거나 변경된 경우 | ✅ rag-pipeline-tester, rag-retrieval-tester |
+| 에이전틱 AI — Tool Calling / MCP만 있는 경우 | ✅ agent-planning, agent-execution, agent-action-safety |
+| 에이전틱 AI — 멀티에이전트 구조인 경우 | ✅ 위 3개 + agent-memory-state, agent-reflection-recovery, agent-multi-agent |
+| 단순 생성 AI 서비스 품질 점검이 필요한 경우 | ✅ gen-* 테스터, ai-evaluator |
+| AI가 생성한 코드/테스트케이스/문서 산출물을 릴리즈에 포함하는 경우 | ✅ ai-generated-output-tester |
+| AI API 연결 상태만 확인하면 되는 경우 | ❌ ai-service-tester만 사용 |
 
 **판단 기준이 흐릿하면 제외가 기본값이다.** 나중에 추가하는 것이 잘못 포함된 것을 제거하는 것보다 쉽다.
 
@@ -81,7 +94,9 @@
 1. 사용자가 브라우저에서 직접 건드리는 것이 바뀌었는가? → `playwright`
 2. 모바일 앱에서 직접 건드리는 것이 바뀌었는가? → `appium`
 3. API 엔드포인트가 추가/변경되었거나, 인증/인가 로직이 바뀌었는가? → `api-tester`
-4. AI 모델 연동, 프롬프트, 응답 파이프라인이 바뀌었는가? → `ai-service-tester`
+4. AI 서비스와 관련된 변경이 있는가?
+   - 연결 상태·응답 형식·기본 기능만 확인하면 되는가? → `ai-service-tester`
+   - 품질·안전성·정확도의 심층 검증이 필요한가? → `ai-qa-lead` (위 활성화 조건 표 참고)
 5. 트래픽이 몰리는 기능이 바뀌었거나 성능 SLA가 있는가? → `performance-tester`
 6. 사용자 개인정보, 결제 데이터, 인증 시스템이 바뀌었는가? → `security-tester`
 

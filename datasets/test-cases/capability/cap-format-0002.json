@@ -1,0 +1,31 @@
+{
+  "id": "cap-format-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "qa",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P2",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Return only one of: low, medium, high.",
+    "user": "Classify priority: The production login page is unavailable for all users."
+  },
+  "expected": {
+    "behavior": "return_exact_label",
+    "ground_truth": "high",
+    "evaluation_method": "exact_match",
+    "pass_threshold": 1.0
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "tech",
+    "language": "en",
+    "tags": ["smoke", "format", "classification"]
+  }
+}

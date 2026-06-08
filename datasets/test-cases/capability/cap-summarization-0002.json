@@ -1,0 +1,30 @@
+{
+  "id": "cap-summarization-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "summarization",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Summarize the text into exactly two bullet points.",
+    "user": "배송은 월요일에 시작됩니다. 결제 오류가 있는 주문은 보류됩니다. 고객센터는 보류 주문 고객에게 이메일을 보냅니다."
+  },
+  "expected": {
+    "behavior": "two_bullets_cover_shipping_and_payment_hold",
+    "evaluation_method": "llm_judge",
+    "pass_threshold": 0.8
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "general",
+    "language": "ko",
+    "tags": ["smoke", "summary", "format"]
+  }
+}

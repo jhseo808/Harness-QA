@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://harness-qa.local/schemas/ai-qa/result.schema.json",
+  "title": "AI QA Run Result",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["run_id", "case_id", "version_snapshot", "config", "output", "evaluation", "executed_at"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "pattern": "^run-[0-9]{8}-[0-9]{3}$"
+    },
+    "case_id": { "type": "string" },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "version_snapshot": {
+      "type": "object",
+      "required": ["model_id", "dataset_version", "rubric_version", "prompt_version"],
+      "properties": {
+        "model_id": { "type": "string" },
+        "model_version": { "type": "string" },
+        "algorithm_version": { "type": "string" },
+        "dataset_version": { "type": "string" },
+        "rubric_version": { "type": "string" },
+        "prompt_version": { "type": "string" },
+        "rag_document_version": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "config": {
+      "type": "object",
+      "required": ["temperature", "top_p", "max_tokens", "environment"],
+      "properties": {
+        "temperature": { "type": "number" },
+        "top_p": { "type": "number" },
+        "max_tokens": { "type": "integer" },
+        "environment": { "enum": ["local", "staging", "production"] }
+      },
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "evaluation": {
+      "type": "object",
+      "required": ["method", "pass"],
+      "properties": {
+        "method": { "type": "string" },
+        "judge_model": { "type": "string" },
+        "rubric_id": { "type": "string" },
+        "weighted_score": { "type": "number" },
+        "pass": { "type": "boolean" },
+        "failure_reason": { "type": ["string", "null"] },
+        "root_cause_layer": {
+          "type": "array",
+          "items": {
+            "enum": ["model", "prompt", "context", "retrieval", "tool", "permission", "observability", "evaluation"]
+          },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "executed_at": { "type": "string" }
+  }
+}

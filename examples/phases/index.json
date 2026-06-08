@@ -6,7 +6,11 @@
       "completed_at": "2025-05-20T10:30:00Z"
     },
     {
-      "dir": "1-auth",
+      "dir": "1-qa-cycle",
+      "status": "pending"
+    },
+    {
+      "dir": "2-ai-qa-cycle",
       "status": "pending"
     }
   ]

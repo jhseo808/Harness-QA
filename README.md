@@ -4,6 +4,24 @@ Claude Code CLI를 이용해 소프트웨어 개발의 **각 단계(Phase)를 �
 
 ---
 
+## 왜 만들었는가
+
+AI 서비스가 빠르게 확산되는 동안, QA 방법론은 그 속도를 따라가지 못하고 있습니다.
+
+전통적인 QA는 결정론적(deterministic) 동작을 전제합니다. 같은 입력에 같은 출력이 나와야 하고, 테스트는 통과 또는 실패로 끝납니다. 그러나 LLM 기반 서비스는 다릅니다. 동일한 질문에도 응답이 매번 달라지고, "틀렸다"가 아니라 "환각이 있다", "출처와 맞지 않는다", "안전하지 않다"는 새로운 실패 유형이 등장합니다. RAG 파이프라인이 추가되면 검색 품질이 응답 품질을 좌우하고, 에이전틱 구조에서는 툴 호출 하나의 오류가 연쇄 실패로 이어집니다.
+
+문제는 **무엇을 테스트해야 하는지조차 팀마다 제각각**이라는 점입니다. 프롬프트를 바꿨을 때 어떤 검증이 필요한지, 모델을 교체했을 때 릴리스를 막을 기준이 무엇인지, RAG 문서가 업데이트됐을 때 어디까지 재검증해야 하는지 — 이 질문들에 체계적으로 답하는 구조가 없는 경우가 대부분입니다.
+
+이 프레임워크는 그 공백을 채우기 위해 설계했습니다. 핵심 아이디어는 두 가지입니다.
+
+**첫째, 서비스 변경 유형에 따라 검증 범위를 자동으로 결정한다.** 순수 생성 AI인지, RAG인지, 에이전틱인지, 모델이 바뀌었는지에 따라 활성화할 테스트 에이전트가 달라집니다. "모든 테스트를 매번 다 돌린다"는 방식은 비용과 시간 면에서 지속 불가능합니다. 4계층 활성화 구조(`activation_matrix`)는 필요한 에이전트만 선택적으로 실행하도록 합니다.
+
+**둘째, 안전성은 타협하지 않는다.** 안전성 기준은 다른 지표의 개선으로 상쇄되지 않습니다. 모델 변경 시 안전 게이트를 통과하지 못하면 사이클 자체가 중단됩니다. 이는 설계 원칙이 아니라 프로세스 레벨에서 강제됩니다.
+
+AI를 활용해 구조를 설계하고, 실무 팀이 바로 가져다 쓸 수 있도록 명세 수준까지 완성하는 것이 이 프로젝트의 목표였습니다.
+
+---
+
 ## 개념 이해
 
 ### 문제
@@ -41,19 +59,60 @@ Harness-QA/
 │   ├── playwright.md           # 웹 UI E2E 자동화 (Playwright)
 │   ├── appium.md               # iOS/Android 모바일 앱 자동화
 │   ├── api-tester.md           # REST/GraphQL API 계약 검증
-│   ├── ai-service-tester.md    # AI 서비스 응답 품질·안전성 검증
+│   ├── ai-service-tester.md    # AI 서비스 연결·응답 경량 검증 (딥QA는 ai-qa 팀)
 │   ├── performance-tester.md   # 부하 테스트·SLA 검증
 │   ├── security-tester.md      # OWASP Top 10 기반 취약점 탐지
 │   └── reporter.md             # 릴리스 의사결정 보고서 합성
 │
-├── examples/phases/            # 실행 가능한 예제 (my-todo-app 기준)
+├── agents/ai-qa/               # AI QA 서브팀 (생성AI·RAG·에이전틱·모델 변경 전담)
+│   ├── _base.md                # AI QA 팀 헌장 (AI 3타입 정의, AI 특화 결함 분류, 산출물 경로)
+│   ├── ai-qa-lead.md           # 4계층 에이전트 선택, activation_matrix 출력, A/B 설계
+│   ├── ai-evaluator.md         # 루브릭·LLM-as-Judge·골든셋·회귀 평가 (항상 실행)
+│   ├── ai-safety-tester.md     # 안전성·보안·권한 (항상 실행)
+│   ├── ai-perf-observability-tester.md  # 지연·비용·재현성·버전 추적 (항상 실행)
+│   ├── gen-quality-tester.md   # 순수 생성 AI 품질·환각·일관성
+│   ├── gen-context-tester.md   # 프롬프트 엔지니어링·컨텍스트 관리
+│   ├── rag-pipeline-tester.md  # 청킹·임베딩·Vector DB·인덱싱
+│   ├── rag-retrieval-tester.md # 검색 품질·출처 일치·권한 필터링
+│   ├── agent-planning-tester.md         # 의도 파악·계획 품질·Goal Drift
+│   ├── agent-execution-tester.md        # Tool Calling·MCP·연쇄 정합성
+│   ├── agent-action-safety-tester.md    # 비가역 작업·안전장치·범위 이탈
+│   ├── agent-memory-state-tester.md     # Working/Long-term memory·상태 추적
+│   ├── agent-reflection-recovery-tester.md  # 자기 오류 감지·복구
+│   ├── agent-multi-agent-tester.md      # 오케스트레이터-워커·태스크 분해·격리
+│   ├── model-safety-gate.md             # 안전성 하드 게이트 (통과 못하면 사이클 중단)
+│   ├── model-capability-evaluator.md    # 벤치마크 회귀·골든셋 비교·A/B
+│   ├── model-alignment-tester.md        # 정직성·Sycophancy·Constitutional AI
+│   ├── model-compatibility-tester.md    # API 형식·프롬프트 하위 호환·Tool Calling
+│   ├── model-human-evaluator.md         # 전문가 평가·선호도 비교·레드팀
+│   ├── model-rollout-monitor.md         # 단계적 배포·모니터링·롤백 기준
+│   └── ai-generated-output-tester.md    # AI 생성 코드·테스트케이스·문서 품질 검증
+│
+├── datasets/                   # AI QA 테스트 데이터 인프라
+│   ├── manifest.yaml           # Suite 정의 (smoke·release·rag_release·agentic_release·model_change·nightly)
+│   ├── schemas/                # JSON Schema (test-case, result, rubric, activation-matrix)
+│   ├── rubrics/                # 평가 루브릭 (default.yaml, safety.yaml, alignment.yaml)
+│   ├── test-cases/             # 카테고리별 테스트 케이스
+│   │   ├── capability/
+│   │   ├── safety/
+│   │   ├── injection/          # direct, indirect, jailbreak, agent-specific
+│   │   └── hallucination/      # factual, reference, rag-grounding, self-knowledge
+│   ├── golden/                 # 골든 데이터셋 (검증된 정답)
+│   ├── baselines/              # 모델별 승인된 기준 지표
+│   ├── results/                # 실행 결과 (append-only, version_snapshot 포함)
+│   └── docs/                   # 데이터셋 관리 문서
+│
+├── examples/phases/            # 실행 가능한 예제
 │   ├── index.json              # 전체 phase 목록
 │   ├── 0-mvp/                  # MVP 구현 phase (일반 개발 예제)
 │   │   ├── index.json
-│   │   ├── step0.md ~ step4.md
-│   └── 1-qa-cycle/             # QA 사이클 phase (QA 에이전트 예제)
+│   │   └── step0.md ~ step4.md
+│   ├── 1-qa-cycle/             # QA 사이클 phase (일반 QA 에이전트 예제)
+│   │   ├── index.json
+│   │   └── step0.md ~ step5.md # qa-lead → requirements → test-case → api → playwright → reporter
+│   └── 2-ai-qa-cycle/          # AI QA 사이클 phase (RAG 챗봇 대상 예제)
 │       ├── index.json
-│       └── step0.md ~ step5.md # qa-lead → requirements → test-case → api → playwright → reporter
+│       └── step0.md ~ step6.md # ai-qa-lead → ai-evaluator → rag-pipeline → rag-retrieval → ai-perf → ai-safety → reporter
 │
 ├── docs/                       # 프로젝트 문서 템플릿 (실제 프로젝트에서 채울 것)
 │   ├── PRD.md
@@ -177,46 +236,71 @@ execute.py 시작
 `step<N>.md`에 `agent` 필드를 지정하면 해당 step에 전문가 페르소나가 주입됩니다.
 
 ```json
-{ "step": 3, "name": "qa-web", "status": "pending", "agent": "qa/playwright" }
+{ "step": 3, "name": "qa-web",    "status": "pending", "agent": "qa/playwright" }
+{ "step": 0, "name": "ai-qa-lead","status": "pending", "agent": "ai-qa/ai-qa-lead" }
 ```
 
-이 경우 하네스는 다음 두 파일을 로드하여 Claude 프롬프트에 포함합니다:
+하네스는 `/` 앞의 도메인에 따라 `_base.md`를 자동 로드하고 에이전트 파일을 그 위에 합칩니다:
 
-1. `agents/qa/_base.md` — QA 팀 공통 헌장 (도메인 기반 자동 로드)
-2. `agents/qa/playwright.md` — Playwright 전문가 페르소나
+- `"agent": "qa/playwright"` → `agents/qa/_base.md` + `agents/qa/playwright.md`
+- `"agent": "ai-qa/rag-pipeline-tester"` → `agents/ai-qa/_base.md` + `agents/ai-qa/rag-pipeline-tester.md`
 
 ### 제공 QA 에이전트
 
+**일반 QA 팀 (`qa/`)**
+
 | 에이전트 | 역할 |
 |---------|------|
-| `qa/qa-lead` | QA 전략 수립, 활성화 agent 결정, 품질 게이트 확정 (선택) |
+| `qa/qa-lead` | QA 전략 수립, 활성화 agent 결정, 품질 게이트 확정 |
 | `qa/requirements-analyst` | 요구사항 완전성·일관성·검증가능성 분석 |
 | `qa/test-case-designer` | 동등분할·경계값·상태전이 기법으로 TC 설계 |
 | `qa/playwright` | 웹 UI E2E 자동화 (Page Object Model, playwright-cli 기반) |
 | `qa/appium` | iOS/Android 모바일 앱 자동화 |
 | `qa/api-tester` | REST/GraphQL API 계약 검증, 보안 경계 테스트 |
-| `qa/ai-service-tester` | AI 서비스 응답 품질, 안전성, 일관성 검증 |
+| `qa/ai-service-tester` | AI 서비스 연결·응답 경량 검증 (딥 QA는 `ai-qa/` 팀으로 라우팅) |
 | `qa/performance-tester` | 부하 테스트, SLA 충족 여부 검증 |
 | `qa/security-tester` | OWASP Top 10 기반 취약점 탐지 |
 | `qa/reporter` | 전체 테스트 결과를 릴리스 의사결정 보고서로 합성 |
 
+**AI QA 서브팀 (`ai-qa/`) — AI 서비스 전담**
+
+4계층 선택 구조로 필요한 에이전트만 활성화됩니다. `ai-qa-lead`가 `activation_matrix.json`을 출력하면 orchestrator가 이를 읽어 병렬 실행합니다.
+
+| 계층 | 에이전트 | 조건 |
+|------|---------|------|
+| Layer 0 (항상) | `ai-qa/ai-evaluator`, `ai-qa/ai-safety-tester`, `ai-qa/ai-perf-observability-tester` | 모든 AI 서비스 |
+| Layer 1 (서비스 타입) | `ai-qa/gen-quality-tester`, `ai-qa/gen-context-tester` | 순수 생성 AI |
+| Layer 1 (서비스 타입) | `ai-qa/rag-pipeline-tester`, `ai-qa/rag-retrieval-tester` | RAG 서비스 |
+| Layer 1 (서비스 타입) | `ai-qa/agent-planning-tester`, `ai-qa/agent-execution-tester`, `ai-qa/agent-action-safety-tester` | 에이전틱 AI |
+| Layer 2 (복잡도) | `ai-qa/agent-memory-state-tester`, `ai-qa/agent-reflection-recovery-tester`, `ai-qa/agent-multi-agent-tester` | 멀티에이전트 구조 |
+| Layer 3 (모델 변경) | `ai-qa/model-safety-gate` → `ai-qa/model-capability-evaluator`, `ai-qa/model-alignment-tester`, `ai-qa/model-compatibility-tester`, `ai-qa/model-human-evaluator`, `ai-qa/model-rollout-monitor` | 모델·알고리즘 변경 시 |
+| Layer 4 (AI 산출물) | `ai-qa/ai-generated-output-tester` | AI 생성 코드·문서 릴리스 시 |
+
 ### 에이전트 간 데이터 흐름
 
 ```
-[qa-lead]  ← 선택. qa-output/qa-strategy.md 산출 (이후 agent들이 참조)
-        ↓
-requirements-analyst
-        ↓ [테스트 범위, 리스크 매트릭스, 테스트 전략]
-test-case-designer
-        ↓ [TC 목록, 커버리지 매트릭스]
-        ├─→ playwright / appium / api-tester
-        ├─→ ai-service-tester / performance-tester / security-tester
-        │       ↓ [*-result.md + *-summary.json]
-        └──────→ reporter
-                    ↓ [릴리스 권고 보고서 (qa-output/release-report.md)]
+[qa-lead]  ← qa-output/qa-strategy.md 산출 (이후 agent들이 참조)
+        │
+        ├─→ [일반 QA 경로]
+        │       requirements-analyst → test-case-designer
+        │           ↓ [TC 목록, 커버리지 매트릭스]
+        │           ├─→ playwright / appium / api-tester
+        │           ├─→ performance-tester / security-tester
+        │           │       ↓ [*-result.md + *-summary.json]
+        │           └──────→ reporter
+        │
+        └─→ [AI QA 경로] ai-service-tester가 딥 QA 필요 판단 시
+                ai-qa-lead
+                    ↓ qa-output/ai-qa-strategy.md + qa-output/activation-matrix.json
+                    │
+                    ├─[setup]  ai-evaluator (루브릭·데이터셋 확정)
+                    ├─[service, 병렬] 서비스 타입 에이전트 + ai-perf-observability-tester
+                    ├─[final]  ai-safety-tester
+                    └──────────→ reporter
+                                    ↓ qa-output/release-report.md
 ```
 
-실행 agent(playwright, appium, api-tester 등)는 Markdown 결과 리포트(`*-result.md`)와 함께 구조화 요약(`*-summary.json`)을 `qa-output/`에 작성합니다. reporter는 JSON을 우선 읽고, 없으면 Markdown으로 fallback합니다.
+실행 에이전트는 Markdown 결과 리포트(`*-result.md`)와 구조화 요약(`*-summary.json`)을 `qa-output/`에 작성합니다. reporter는 JSON을 우선 읽고, 없으면 Markdown으로 fallback합니다.
 
 ---
 
@@ -240,10 +324,10 @@ test-case-designer
 
 ```
 feat(0-mvp): step 2 — api-layer    ← 코드 변경사항
-chore(0-mvp): step 2 output        ← index.json, step2-result.json, qa-output/*
+chore(0-mvp): step 2 output        ← index.json, step2-result.json
 ```
 
-`qa-output/` 산출물(전략 문서, 테스트 결과, 릴리스 보고서 등)은 코드 커밋이 아닌 housekeeping 커밋에 포함됩니다. 릴리스 증적으로 저장소에 추적됩니다.
+`qa-output/`은 `.gitignore`에 등록되어 있으므로 커밋에 포함되지 않습니다. 릴리스 보고서 등 외부 공유가 필요한 산출물은 별도 채널(이슈 첨부, 내부 스토리지 등)을 통해 관리하세요.
 
 ---
 
@@ -325,6 +409,7 @@ pytest test_execute.py -v
 
 QA 에이전트가 릴리스 승인을 권고하려면 아래 조건을 모두 만족해야 합니다:
 
+**일반 품질 게이트**
 - P0 결함 0건
 - P1 결함 수정 완료 또는 릴리스 책임자 승인
 - 핵심 사용자 플로우 커버리지 100%
@@ -332,3 +417,10 @@ QA 에이전트가 릴리스 승인을 권고하려면 아래 조건을 모두 �
 - 보안 Critical 취약점 0건
 - 성능 SLA 충족 (P95 응답시간 < 1000ms)
 - 테스트 결과 보고서 작성 완료
+
+**AI QA 추가 게이트** (AI 서비스 변경 시)
+- AI 안전성 100% — 단 한 건의 유해 응답도 허용 안 됨 (타 지표로 상쇄 불가)
+- AI 정확도 ≥ 90%
+- RAG 출처 일치율 ≥ 95% (RAG 서비스인 경우)
+- 모델 안전 게이트 통과 (모델·알고리즘 변경 시, 미통과 시 사이클 즉시 중단)
+- 에이전틱 액션 안전성 통과 (에이전틱 AI인 경우)

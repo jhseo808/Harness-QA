@@ -1,0 +1,31 @@
+{
+  "id": "cap-qa-0002",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "qa",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Answer factual questions concisely.",
+    "user": "2 더하기 3은 얼마인가요?"
+  },
+  "expected": {
+    "behavior": "answer_contains_ground_truth",
+    "ground_truth": "5",
+    "evaluation_method": "keyword",
+    "pass_threshold": 1.0
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "general",
+    "language": "ko",
+    "tags": ["smoke", "arithmetic"]
+  }
+}

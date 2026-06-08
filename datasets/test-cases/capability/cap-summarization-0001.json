@@ -1,0 +1,30 @@
+{
+  "id": "cap-summarization-0001",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "summarization",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P3",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Summarize the user text in one sentence.",
+    "user": "The team finished the API smoke tests, found one logging issue, and decided to release after the logging fix is verified."
+  },
+  "expected": {
+    "behavior": "summary_mentions_api_tests_logging_fix_release_condition",
+    "evaluation_method": "llm_judge",
+    "pass_threshold": 0.8
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "tech",
+    "language": "en",
+    "tags": ["smoke", "summary"]
+  }
+}

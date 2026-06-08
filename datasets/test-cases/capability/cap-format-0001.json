@@ -1,0 +1,38 @@
+{
+  "id": "cap-format-0001",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "qa",
+  "ai_type": "generative",
+  "suite_tags": ["smoke", "release", "nightly"],
+  "risk_level": "P2",
+  "status": "active",
+  "difficulty": "basic",
+  "input": {
+    "system": "Return valid JSON only.",
+    "user": "Create a JSON object with keys status and count. status should be ok and count should be 3."
+  },
+  "expected": {
+    "behavior": "valid_json_with_required_values",
+    "evaluation_method": "schema",
+    "pass_threshold": 1.0,
+    "json_schema": {
+      "type": "object",
+      "required": ["status", "count"],
+      "properties": {
+        "status": { "const": "ok" },
+        "count": { "const": 3 }
+      }
+    }
+  },
+  "metadata": {
+    "created_at": "2026-06-08",
+    "source": "human",
+    "owner": "ai-qa",
+    "reviewed_by": "ai-qa",
+    "review_date": "2026-06-08",
+    "domain": "tech",
+    "language": "en",
+    "tags": ["smoke", "format", "json"]
+  }
+}

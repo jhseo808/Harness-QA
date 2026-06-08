@@ -88,6 +88,31 @@
 | `qa/security-tester` | 보안/취약점 테스트 |
 | `qa/reporter` | 테스트 결과 보고서 작성 |
 
+**AI QA 전용 agent 값:**
+| agent 값 | 역할 |
+|----------|------|
+| `ai-qa/ai-qa-lead` | AI 서비스 타입 판정, activation matrix, suite, 품질 게이트 확정 |
+| `ai-qa/ai-evaluator` | 데이터셋, 루브릭, LLM-as-Judge, 회귀 평가 설계 |
+| `ai-qa/ai-safety-tester` | AI 안전성, 프롬프트 인젝션, 권한/PII 방어 검증 |
+| `ai-qa/ai-perf-observability-tester` | 지연, 비용, 로그, 버전 추적, 재현성 검증 |
+| `ai-qa/gen-quality-tester` | 생성 AI 응답 품질, 환각, 일관성, 형식 검증 |
+| `ai-qa/gen-context-tester` | 프롬프트/컨텍스트 구성 품질 검증 |
+| `ai-qa/rag-pipeline-tester` | RAG 청킹, 임베딩, 인덱싱, 문서 파이프라인 검증 |
+| `ai-qa/rag-retrieval-tester` | RAG 검색 품질, 출처 일치, 권한 필터링 검증 |
+| `ai-qa/agent-planning-tester` | 에이전틱 AI 목표 해석, 계획, Goal Drift 검증 |
+| `ai-qa/agent-execution-tester` | Tool Calling, MCP, 실행 연쇄, 도구 결과 처리 검증 |
+| `ai-qa/agent-action-safety-tester` | 비가역 작업, 승인 흐름, 작업 범위 이탈 검증 |
+| `ai-qa/agent-memory-state-tester` | 메모리와 상태 추적 검증 |
+| `ai-qa/agent-reflection-recovery-tester` | 자기 오류 감지와 복구 검증 |
+| `ai-qa/agent-multi-agent-tester` | 멀티 에이전트 분리, 권한, 충돌 검증 |
+| `ai-qa/model-safety-gate` | 모델 변경 전 안전성 하드 게이트 |
+| `ai-qa/model-capability-evaluator` | 모델 역량/벤치마크 회귀 평가 |
+| `ai-qa/model-alignment-tester` | 정직성, 캘리브레이션, sycophancy 평가 |
+| `ai-qa/model-compatibility-tester` | 프롬프트/API/Tool Calling 하위 호환성 검증 |
+| `ai-qa/model-human-evaluator` | 사람 평가, 선호도 비교, 레드팀 검수 조율 |
+| `ai-qa/model-rollout-monitor` | 단계적 배포, 모니터링, 롤백 기준 검증 |
+| `ai-qa/ai-generated-output-tester` | AI가 생성한 코드/문서/테스트 산출물 품질 검증 |
+
 상태 전이와 자동 기록 필드:
 
 | 전이 | 기록되는 필드 | 기록 흐름 |
