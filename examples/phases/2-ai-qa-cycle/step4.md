@@ -43,9 +43,15 @@ RAG 챗봇의 성능과 관측 가능성을 검증하라.
 - `qa-output/ai-perf-summary.json` — 구조화 요약
 - P95 지연 > 2000ms 또는 비용 증가 > +10%이면 `release_gate: conditional`
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step4-result.json`을 작성하라:
-- 성공 → `{"status": "completed", "summary": "성능 검증 완료. E2E P95: 1240ms, Vector DB P95: 78ms, 토큰 비용 변화: +3%, 에러율: 0%", "artifacts": ["qa-output/ai-perf-result.md", "qa-output/ai-perf-summary.json"]}`
-- 조건부 → `{"status": "completed", "summary": "성능 검증 완료. E2E P95: 1850ms (기준 근접). release_gate: conditional", "artifacts": ["qa-output/ai-perf-result.md", "qa-output/ai-perf-summary.json"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step4-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "성능 검증 완료. E2E P95: 1240ms, Vector DB P95: 78ms, 토큰 비용 변화: +3%, 에러율: 0%", "artifacts": ["qa-output/ai-perf-result.md", "qa-output/ai-perf-summary.json"]}`
+   - 조건부 → `{"status": "completed", "summary": "성능 검증 완료. E2E P95: 1850ms (기준 근접). release_gate: conditional", "artifacts": ["qa-output/ai-perf-result.md", "qa-output/ai-perf-summary.json"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 아키텍처 변경이나 설정 수정을 시도하지 마라. 이유: QA step은 측정과 보고 역할; 수정은 담당 팀에 전달.
+- SLA 기준(P95 ≤ 2000ms, 비용 ±10%)을 임의로 완화하지 마라. 이유: ai-qa-strategy.md에서 확정된 기준 준수.

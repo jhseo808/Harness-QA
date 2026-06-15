@@ -1,0 +1,9 @@
+{
+  "project": "<프로젝트명>",
+  "phase": "minimal-core",
+  "steps": [
+    { "step": 0, "name": "setup",     "status": "pending" },
+    { "step": 1, "name": "implement", "status": "pending" },
+    { "step": 2, "name": "verify",    "status": "pending" }
+  ]
+}

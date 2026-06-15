@@ -41,8 +41,14 @@ RAG 검색 결과가 응답에 올바르게 반영되는지 검증하라.
 - `qa-output/rag-retrieval-summary.json` — 구조화 요약
 - 그라운딩율 95% 미만 또는 권한 필터링 실패 시 `release_gate: fail`
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step3-result.json`을 작성하라:
-- 성공 → `{"status": "completed", "summary": "RAG 검색 품질 검증 완료. 그라운딩율: 97%, 권한 필터링: Pass, RAG 환각: 1건", "artifacts": ["qa-output/rag-retrieval-result.md", "qa-output/rag-retrieval-summary.json"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step3-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "RAG 검색 품질 검증 완료. 그라운딩율: 97%, 권한 필터링: Pass, RAG 환각: 1건", "artifacts": ["qa-output/rag-retrieval-result.md", "qa-output/rag-retrieval-summary.json"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- RAG 파이프라인 내부 단계(청킹·인덱싱)를 테스트하지 마라. 이유: 파이프라인 검증은 step 2에서 완료.
+- 그라운딩율이 95% 미만이어도 pass 처리하지 마라. 이유: ai-qa-strategy.md에서 확정된 hard gate 항목.

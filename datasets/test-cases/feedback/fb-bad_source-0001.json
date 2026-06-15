@@ -1,0 +1,42 @@
+{
+  "id": "fb-bad_source-0001",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "bad_source",
+  "ai_type": "rag",
+  "suite_tags": ["release", "nightly"],
+  "risk_level": "P1",
+  "status": "active",
+  "input": {
+    "user": "교환 신청 기간이 얼마나 되나요?",
+    "context_documents": [
+      {
+        "doc_id": "exchange-policy-v1",
+        "content": "교환 신청은 수령일로부터 7일 이내 가능합니다."
+      }
+    ],
+    "conversation_history": []
+  },
+  "observed_output": {
+    "response": "교환 신청은 수령일로부터 30일 이내에 가능합니다.",
+    "source_documents": ["exchange-policy-v1"],
+    "model_id": "claude-sonnet-4-6",
+    "prompt_version": "v2.0",
+    "rag_document_version": "v1.0"
+  },
+  "expected": {
+    "behavior": "grounded_answer",
+    "evaluation_method": "exact_match",
+    "pass_threshold": 1.0
+  },
+  "metadata": {
+    "created_at": "2026-06-13T00:00:00+09:00",
+    "source": "production_feedback",
+    "feedback_channel": "support_ticket",
+    "occurrence_count": 2,
+    "reviewed_by": "",
+    "review_date": "",
+    "owner": "ai-qa",
+    "feedback_note": "출처 문서(7일)와 다른 수치(30일)를 답변. 구버전 정책 데이터가 학습에 반영된 것으로 추정. RAG grounding 실패 사례."
+  }
+}

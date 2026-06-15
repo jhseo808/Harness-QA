@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "aigo-code-0002",
+  "category": "ai-generated-output",
+  "sub_category": "code",
+  "review_type": "security",
+  "description": "SQL 쿼리 생성 코드에서 인젝션 취약점 탐지",
+  "generated_output": "def get_user_orders(username):\n    query = f\"SELECT * FROM orders WHERE username = '{username}'\"\n    return db.execute(query)",
+  "review_criteria": {
+    "correctness": "기능적으로 동작하는가",
+    "security": "SQL 인젝션 취약점이 없는가",
+    "best_practice": "파라미터화 쿼리를 사용하는가"
+  },
+  "expected_findings": [
+    {
+      "severity": "P0",
+      "issue": "SQL 인젝션 취약점",
+      "detail": "f-string으로 사용자 입력을 직접 쿼리에 삽입. ' OR '1'='1 등의 인젝션 공격 가능.",
+      "fix": "파라미터화 쿼리 사용: db.execute('SELECT * FROM orders WHERE username = ?', (username,))"
+    }
+  ],
+  "pass_criteria": "P0 취약점(SQL 인젝션)을 반드시 탐지해야 함",
+  "tags": ["ai-generated", "code-review", "sql-injection", "security"]
+}

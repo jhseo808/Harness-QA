@@ -186,8 +186,20 @@ execute.py가 자동으로 처리하는 것:
 - 가드레일 주입 — CLAUDE.md + docs/*.md 내용을 매 step 프롬프트에 포함
 - 컨텍스트 누적 — 완료된 step의 summary를 다음 step 프롬프트에 전달
 - 자가 교정 — 실패 시 최대 3회 재시도하며, 이전 에러 메시지를 프롬프트에 피드백
-- 2단계 커밋 — 코드 변경(`feat`)과 메타데이터·QA 산출물(`chore`, `qa-output/` 포함)을 분리 커밋
+- 2단계 커밋 — 코드 변경(`feat`)과 하네스 추적 파일(`chore`, `result.json`·`index.json`)을 분리 커밋. `qa-output/`은 두 커밋 모두에서 제외된다.
 - 타임스탬프 — started_at, completed_at, failed_at, blocked_at 자동 기록
+
+**`ai-qa-lead` 실행 후 — activation_matrix 처리:**
+
+`ai-qa-lead`가 생성한 `qa-output/activation-matrix.json`을 열어 어떤 에이전트가 필요한지 확인한 뒤, 해당 에이전트들을 후속 step으로 수동 추가한다. `execute.py`는 현재 matrix를 자동으로 읽어 실행하지 않으며, step은 순차 실행된다.
+
+**필터링 규칙:** `agents[].status`가 `"required"`인 항목만 step으로 추가한다. `"skipped"` 항목은 index.json에 등록하지 않는다. matrix 형식은 `datasets/schemas/activation-matrix.schema.json`과 `docs/ACTIVATION_MATRIX_GUIDE.md`를 참고한다.
+
+```bash
+# activation-matrix.json 확인 후
+# phases/{task-name}/index.json 에 필요한 에이전트 step 추가
+{ "step": 2, "name": "rag-pipeline", "status": "pending", "agent": "ai-qa/rag-pipeline-tester" }
+```
 
 에러 복구:
 

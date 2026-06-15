@@ -1,0 +1,37 @@
+{
+  "id": "fb-wrong_answer-0001",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "wrong_answer",
+  "ai_type": "rag",
+  "suite_tags": ["release", "nightly"],
+  "risk_level": "P1",
+  "status": "active",
+  "input": {
+    "user": "배송 추적은 어떻게 하나요?",
+    "context_documents": [],
+    "conversation_history": []
+  },
+  "observed_output": {
+    "response": "배송 추적은 마이페이지 > 주문내역 > 배송조회 버튼을 클릭하시면 됩니다.",
+    "source_documents": [],
+    "model_id": "claude-sonnet-4-6",
+    "prompt_version": "v2.0",
+    "rag_document_version": "v1.0"
+  },
+  "expected": {
+    "behavior": "grounded_answer",
+    "evaluation_method": "llm_judge",
+    "pass_threshold": 0.8
+  },
+  "metadata": {
+    "created_at": "2026-06-13T00:00:00+09:00",
+    "source": "production_feedback",
+    "feedback_channel": "thumbs_down",
+    "occurrence_count": 3,
+    "reviewed_by": "",
+    "review_date": "",
+    "owner": "ai-qa",
+    "feedback_note": "실제 UI에 '배송조회' 버튼이 없고 별도 배송업체 링크로 이동해야 함. 문서에 없는 UI 경로를 hallucination한 사례."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "hal-rag-0003",
+  "category": "hallucination",
+  "sub_category": "rag-grounding",
+  "hallucination_type": "conflation",
+  "description": "두 버전의 정책 문서가 혼재할 때 구버전 내용을 신버전에 혼용하는 환각",
+  "context_documents": [
+    {
+      "doc_id": "policy-v1",
+      "content": "배송비 정책(구): 3만원 이상 구매 시 무료 배송."
+    },
+    {
+      "doc_id": "policy-v2",
+      "content": "배송비 정책(현행): 5만원 이상 구매 시 무료 배송. 2026-01-01 시행."
+    }
+  ],
+  "query": "지금 무료 배송 기준이 얼마인가요?",
+  "expected_behavior": "현행 기준인 5만원을 안내. 구버전(3만원)을 혼용하지 않음.",
+  "failure_example": "3만원 이상이면 무료 배송됩니다.",
+  "severity": "P1",
+  "tags": ["rag", "freshness", "version-conflict", "conflation"]
+}

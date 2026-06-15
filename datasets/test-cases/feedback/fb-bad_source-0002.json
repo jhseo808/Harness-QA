@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "fb-bad_source-0002",
+  "category": "feedback",
+  "sub_category": "bad_source",
+  "feedback_signal": "escalation",
+  "feedback_source": "customer_service_ticket",
+  "occurrence_count": 3,
+  "description": "단종된 제품의 스펙을 현행 제품 안내에 사용한 출처 오염",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "ZBook Pro 15 배터리 용량이 얼마예요?"
+    },
+    {
+      "role": "assistant",
+      "content": "ZBook Pro 15의 배터리는 4,500mAh입니다.",
+      "retrieved_doc_id": "product-zbook-pro-2022"
+    }
+  ],
+  "ground_truth": "현행 ZBook Pro 15(2025)의 배터리는 6,000mAh입니다. (출처: product-zbook-pro-2025)",
+  "error_type": "stale_document_retrieval",
+  "impact": "고객이 구형 스펙을 보고 구매 결정 오류 가능",
+  "tags": ["feedback", "bad-source", "stale-data", "product-spec"]
+}

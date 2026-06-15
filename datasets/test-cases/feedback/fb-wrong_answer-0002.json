@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "fb-wrong_answer-0002",
+  "category": "feedback",
+  "sub_category": "wrong_answer",
+  "feedback_signal": "thumbs_down",
+  "feedback_source": "user_report",
+  "occurrence_count": 7,
+  "description": "적립금 만료 기한을 잘못 안내하는 반복 오류",
+  "conversation": [
+    {
+      "role": "user",
+      "content": "적립금 만료 기한이 어떻게 되나요?"
+    },
+    {
+      "role": "assistant",
+      "content": "적립금은 마지막 사용일로부터 1년 후 자동 소멸됩니다."
+    }
+  ],
+  "ground_truth": "적립금은 적립일로부터 2년 후 소멸됩니다. 사용 여부와 무관합니다.",
+  "error_type": "factual_error",
+  "impact": "고객이 만료 전 적립금을 사용하지 못해 소멸 피해 발생 가능",
+  "tags": ["feedback", "wrong-answer", "loyalty-points", "policy-error"]
+}

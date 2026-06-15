@@ -31,9 +31,15 @@ phase step 구성(index.json)은 이미 확정됐으므로 별도 계획 파일�
   - 이번 사이클 품질 게이트
   - 환경 선행 조건 체크리스트
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/1-qa-cycle/step0-result.json`을 작성하라
-(index.json은 하네스가 자동 갱신 — 직접 수정 금지):
-- 성공 → `{"status": "completed", "summary": "QA 전략 수립 완료. 활성화 agent: requirements-analyst, test-case-designer, api-tester, playwright, reporter", "artifacts": ["qa-output/qa-strategy.md"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/1-qa-cycle/step0-result.json`을 작성하라
+   (index.json은 하네스가 자동 갱신 — 직접 수정 금지):
+   - 성공 → `{"status": "completed", "summary": "QA 전략 수립 완료. 활성화 agent: requirements-analyst, test-case-designer, api-tester, playwright, reporter", "artifacts": ["qa-output/qa-strategy.md"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 이번 step에서 테스트 케이스나 테스트 코드를 작성하지 마라. 이유: 전략 수립만 담당하며, 케이스 설계는 step 2에서 수행.
+- index.json을 직접 수정하지 마라. 이유: 하네스가 자동 관리하는 파일.

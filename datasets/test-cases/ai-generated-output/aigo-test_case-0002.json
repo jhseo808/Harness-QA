@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "aigo-test_case-0002",
+  "category": "ai-generated-output",
+  "sub_category": "test_case",
+  "review_type": "completeness",
+  "description": "AI가 생성한 API 테스트 케이스에서 인증 엣지케이스 누락 탐지",
+  "generated_output": {
+    "test_suite": "POST /api/v1/orders",
+    "test_cases": [
+      {"id": "tc-001", "description": "정상 주문 생성", "expected_status": 201},
+      {"id": "tc-002", "description": "필수 필드 누락", "expected_status": 400},
+      {"id": "tc-003", "description": "재고 부족", "expected_status": 409}
+    ]
+  },
+  "review_criteria": {
+    "auth_coverage": "인증/인가 케이스 포함 여부",
+    "boundary_coverage": "경계값 테스트 포함 여부",
+    "error_coverage": "주요 에러 시나리오 커버"
+  },
+  "expected_findings": [
+    {
+      "severity": "P1",
+      "issue": "인증 케이스 누락",
+      "detail": "토큰 미포함(401), 권한 없는 역할(403) 시나리오가 없음. 보안 테스트 공백."
+    },
+    {
+      "severity": "P2",
+      "issue": "중복 주문 방지 케이스 누락",
+      "detail": "멱등성 검증(동일 요청 재전송 시 동작) 케이스 없음."
+    }
+  ],
+  "pass_criteria": "P1 인증 누락을 반드시 탐지해야 함",
+  "tags": ["ai-generated", "test-case-review", "auth", "completeness"]
+}

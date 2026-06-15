@@ -1,0 +1,81 @@
+{
+  "assessment_id": "assess-20260614-002",
+  "target": "harness-structure",
+  "rubric_version": "harness-structure-rubric.v1",
+  "evaluated_at": "2026-06-14T19:16:36+09:00",
+  "evaluator": {
+    "tool": "Codex",
+    "model_family": "GPT-5",
+    "reason": "Claude Code 중심 하네스를 다른 모델 계열로 평가해 자기평가 편향을 줄이기 위함"
+  },
+  "harness_commit": "bb0d794",
+  "working_tree_state": "dirty",
+  "compared_to_run": "assess-20260614-001",
+  "total_score": 95,
+  "rating": "매우 우수한 구조",
+  "scores": {
+    "core_execution_method": 19,
+    "step_state_result_contract": 15,
+    "qa_agent_structure": 19,
+    "core_extension_boundary": 14,
+    "onboarding_maintainability_structure": 14,
+    "example_template_structure": 9,
+    "assessment_history_structure": 5
+  },
+  "strengths": [
+    "일반 QA base와 AI-QA base의 산출물 계약이 분리되어 Core QA와 AI-QA 확장 경계가 선명해졌다.",
+    ".claude/commands/harness.md의 커밋 정책이 scripts/execute.py의 실제 qa-output 제외 동작과 일치한다.",
+    "scripts/execute.py가 pending step 선택, result 검증, stale 상태 필드 정리, 재시도, blocked 복구, agent 주입을 안정적인 단일 루프로 유지한다.",
+    "runner 호출 조립부가 _build_runner_cmd 메서드로 분리되어 모델/도구 호출부를 교체할 최소 경계가 생겼다.",
+    "activation matrix의 required/skipped 필터링 규칙과 schema 기준이 문서화되어 AI-QA 확장을 수동으로라도 일관되게 step으로 변환할 수 있다.",
+    "minimal-core 예시가 추가되어 새 QA팀이 agent나 dataset 확장 없이 Core step 계약만 먼저 이해할 수 있는 기반이 생겼다.",
+    "assessments/가 rubric, prompt template, run 기록, latest, legacy를 분리해 하네스 자체 QA를 반복 가능한 기록 구조로 만든다."
+  ],
+  "risks": [
+    "docs/ACTIVATION_MATRIX_GUIDE.md가 reporter 예시를 ai-qa/reporter로 적고 있으나 실제 reporter 파일은 agents/qa/reporter.md에 있어 문서와 agent 경로가 일부 불일치한다.",
+    "_build_runner_cmd가 생겼지만 README와 실행 구조는 여전히 Claude CLI 중심으로 설명되어 있어 모델/도구 adapter 경계가 설정 또는 문서 수준까지 확장되지는 않았다.",
+    "activation_matrix는 schema와 변환 규칙이 정리됐지만 execute.py가 자동으로 읽지는 않으므로 실제 실행은 여전히 수동 step 변환 정확도에 의존한다.",
+    "minimal-core 예시는 존재하지만 README/GETTING_STARTED의 예시 목록에서 충분히 전면 안내되지 않아 첫 도입 경로의 경량성이 완전히 드러나지는 않는다.",
+    "AI-QA agent 수가 많고 역할 폭이 넓어 Core와 선택 확장을 구분하는 문서 구조가 계속 동기화되지 않으면 다시 무거워질 수 있다."
+  ],
+  "change_impact_summary": [
+    "assess-20260614-001의 P0 개선안이었던 QA/AI-QA base 계약 분리와 qa-output 커밋 정책 정합화가 반영되어 Step/상태/Result 계약과 agent 경계 점수가 상승했다.",
+    "activation matrix 변환 규칙이 schema 기준 required/skipped 필터링으로 명확해져 Core와 선택 확장 경계 점수가 상승했다.",
+    "scripts/execute.py에 runner 명령 조립 메서드가 분리되어 Core 실행 방식의 모델 변경 내성이 개선되었다.",
+    "examples/phases/minimal-core가 추가되어 최소 Core 예시 항목이 개선되었다.",
+    "working tree가 dirty 상태이므로 이 평가는 bb0d794와 미커밋 변경이 섞인 현재 작업공간 기준이다."
+  ],
+  "recommended_next_actions": [
+    "docs/ACTIVATION_MATRIX_GUIDE.md의 reporter 경로를 실제 구조와 맞게 qa/reporter로 정리하거나, AI-QA 전용 reporter를 만들 계획이라면 agents/ai-qa/reporter.md를 명시적으로 추가한다.",
+    "README.md와 GETTING_STARTED.md의 예시 목록에 examples/phases/minimal-core를 추가해 새 QA팀의 첫 진입 경로를 더 가볍게 만든다.",
+    "scripts/execute.py의 _build_runner_cmd를 환경변수 또는 설정 기반 runner adapter로 확장할지 검토하고, README에 교체 지점을 짧게 문서화한다.",
+    "activation_matrix를 자동 실행까지 연결할 필요는 없더라도, matrix-to-step 변환 예시의 agent 경로와 index 필드가 실제 파일 구조와 항상 맞는지 유지보수 체크리스트에 포함한다."
+  ],
+  "target_score": 95,
+  "target_score_gap": 0,
+  "priority_improvements_to_95": [],
+  "evidence_files": [
+    "scripts/execute.py",
+    ".claude/commands/harness.md",
+    "agents/qa/_base.md",
+    "agents/ai-qa/_base.md",
+    "agents/qa/",
+    "agents/ai-qa/",
+    "README.md",
+    "GETTING_STARTED.md",
+    "docs/ACTIVATION_MATRIX_GUIDE.md",
+    "datasets/manifest.yaml",
+    "datasets/schemas/activation-matrix.schema.json",
+    "datasets/README.md",
+    "examples/phases/minimal-core/index.json",
+    "examples/phases/minimal-core/step0.md",
+    "examples/phases/minimal-core/step1.md",
+    "examples/phases/minimal-core/step2.md",
+    "examples/phases/1-qa-cycle/index.json",
+    "examples/phases/2-ai-qa-cycle/index.json",
+    "assessments/rubrics/harness-structure-rubric.v1.md",
+    "assessments/templates/harness-assessment-prompt.md",
+    "assessments/runs/assess-20260614-001/assessment.json",
+    "assessments/history.md"
+  ]
+}

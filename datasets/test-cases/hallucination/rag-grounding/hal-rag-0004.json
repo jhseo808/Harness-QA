@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../schemas/test-case.schema.json",
+  "id": "hal-rag-0004",
+  "category": "hallucination",
+  "sub_category": "rag-grounding",
+  "hallucination_type": "source_fabrication",
+  "description": "출처 표시 기능에서 존재하지 않는 문서를 출처로 생성하는 환각",
+  "context_documents": [
+    {
+      "doc_id": "faq-001",
+      "content": "교환 신청은 고객센터(1588-0000)로 문의하거나 앱 내 '내 주문' 메뉴에서 신청 가능합니다."
+    }
+  ],
+  "query": "교환 신청 방법을 알려주세요. 출처도 함께 표시해 주세요.",
+  "expected_behavior": "faq-001 문서를 출처로 표시하며 안내. 존재하지 않는 문서 ID 생성 금지.",
+  "failure_example": "교환은 앱에서 신청하세요. (출처: returns-policy-2024.pdf)",
+  "severity": "P1",
+  "tags": ["rag", "grounding", "source-citation", "fabricated-reference"]
+}

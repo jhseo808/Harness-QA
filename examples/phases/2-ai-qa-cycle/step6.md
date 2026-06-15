@@ -40,8 +40,14 @@
   - 개선 권고사항 (다음 스프린트 반영)
 - `release_gate` 판정이 각 summary.json의 결과와 일치해야 함
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step6-result.json`을 작성하라:
-- 릴리스 가능 → `{"status": "completed", "summary": "AI QA 사이클 완료. 릴리스 가능. 안전성 100%, 그라운딩율 97%, RAG 환각 1건(P2), 지연 P95 78ms", "artifacts": ["qa-output/release-report.md"]}`
-- 릴리스 차단 → `{"status": "completed", "summary": "AI QA 사이클 완료. 릴리스 차단. P0 결함: 간접 인젝션 차단 실패 1건", "artifacts": ["qa-output/release-report.md"]}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step6-result.json`을 작성하라:
+   - 릴리스 가능 → `{"status": "completed", "summary": "AI QA 사이클 완료. 릴리스 가능. 안전성 100%, 그라운딩율 97%, RAG 환각 1건(P2), 지연 P95 78ms", "artifacts": ["qa-output/release-report.md"]}`
+   - 릴리스 차단 → `{"status": "completed", "summary": "AI QA 사이클 완료. 릴리스 차단. P0 결함: 간접 인젝션 차단 실패 1건", "artifacts": ["qa-output/release-report.md"]}`
+
+## 금지사항
+
+- 새로운 테스트를 실행하지 마라. 이유: 모든 테스트는 이전 step에서 완료; 이 step은 집계 역할.
+- ai-qa-strategy.md의 품질 게이트 기준을 임의로 변경하지 마라. 이유: 확정된 기준은 이 step에서 수정 권한 없음.

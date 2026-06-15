@@ -32,8 +32,14 @@
 - `qa-output/ai-eval-result.md` — 셋업 검증 결과 (루브릭 동작 확인)
 - `qa-output/ai-eval-summary.json` — 구조화 요약 (`suite: "rag_release"` 필드 포함)
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step1-result.json`을 작성하라:
-- 성공 → `{"status": "completed", "summary": "평가 체계 확정. 루브릭: default+RAG조정, 케이스: 120건+, Judge: claude-opus-4-8", "artifacts": ["qa-output/ai-eval-setup.md", "qa-output/ai-eval-result.md", "qa-output/ai-eval-summary.json"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step1-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "평가 체계 확정. 루브릭: default+RAG조정, 케이스: 120건+, Judge: claude-opus-4-8", "artifacts": ["qa-output/ai-eval-setup.md", "qa-output/ai-eval-result.md", "qa-output/ai-eval-summary.json"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 실제 모델 API를 호출하지 마라. 이유: 평가 체계 설계 단계이며, 실행은 이후 step에서 수행.
+- `datasets/rubrics/` 파일을 직접 수정하지 마라. 이유: 공유 자산; 조정된 루브릭은 `qa-output/`에 별도 작성.

@@ -104,6 +104,9 @@ Harness-QA/
 │
 ├── examples/phases/            # 실행 가능한 예제
 │   ├── index.json              # 전체 phase 목록
+│   ├── minimal-core/           # Core 전용 최소 예제 (agent 없는 3-step, 처음 시작점)
+│   │   ├── index.json
+│   │   └── step0.md ~ step2.md
 │   ├── 0-mvp/                  # MVP 구현 phase (일반 개발 예제)
 │   │   ├── index.json
 │   │   └── step0.md ~ step4.md
@@ -114,10 +117,20 @@ Harness-QA/
 │       ├── index.json
 │       └── step0.md ~ step6.md # ai-qa-lead → ai-evaluator → rag-pipeline → rag-retrieval → ai-perf → ai-safety → reporter
 │
+├── assessments/                # 하네스 구조 자기평가 이력
+│   ├── README.md               # 평가 원칙·요청 방법·결과 구조 안내
+│   ├── history.md              # 전체 run 이력 (날짜·점수·평가자·주요 변경)
+│   ├── latest.md               # 최신 평가 run 포인터
+│   ├── rubrics/                # 루브릭 버전 파일 (고정, 변경 시 새 버전 생성)
+│   ├── templates/              # 평가 프롬프트 템플릿
+│   ├── runs/                   # run 단위 결과 (assessment.json, report.md, snapshot.md)
+│   └── legacy/                 # 구 평가 체계 기록
+│
 ├── docs/                       # 프로젝트 문서 템플릿 (실제 프로젝트에서 채울 것)
 │   ├── PRD.md
 │   ├── ARCHITECTURE.md
-│   └── ADR.md
+│   ├── ADR.md
+│   └── AI_QA_HARDENING_PLAN.md  # AI QA 강화 계획 (현재 상태 및 개선 갭 기록)
 │
 ├── .claude/
 │   ├── CLAUDE.md               # 프로젝트별 기술 스택·아키텍처 규칙 템플릿
@@ -264,7 +277,9 @@ execute.py 시작
 
 **AI QA 서브팀 (`ai-qa/`) — AI 서비스 전담**
 
-4계층 선택 구조로 필요한 에이전트만 활성화됩니다. `ai-qa-lead`가 `activation_matrix.json`을 출력하면 orchestrator가 이를 읽어 병렬 실행합니다.
+4계층 선택 구조로 필요한 에이전트만 활성화됩니다. `ai-qa-lead`가 `activation_matrix.json`을 출력해 어떤 에이전트를 실행할지 결정합니다.
+
+> **현재 제약:** `execute.py`는 step을 순차 실행합니다. `activation_matrix.json`은 어떤 에이전트가 필요한지를 기록하는 **전략 문서**이며, 실제 에이전트 실행은 matrix를 참고해 후속 step 파일(`step<N>.md`)로 수동 변환합니다. 병렬 실행(`--parallel` 모드)은 장기 개선 항목입니다.
 
 | 계층 | 에이전트 | 조건 |
 |------|---------|------|
@@ -316,6 +331,10 @@ execute.py 시작
 | `docs/ARCHITECTURE.md` | 디렉토리 구조, 디자인 패턴, 데이터 흐름 |
 | `docs/ADR.md` | 기술 선택 의사결정 기록 |
 
+> **클론 직후 이 파일들은 비어 있습니다.** `.claude/CLAUDE.md`와 `docs/*.md`는 의도적으로 비워둔 **템플릿**입니다.
+> 이 파일들을 채우지 않으면 Claude가 프로젝트 컨텍스트 없이 실행되어 step 결과 품질이 저하됩니다.
+> 첫 실행 전에 반드시 작성하세요 — 작성 방법은 [GETTING_STARTED.md](GETTING_STARTED.md) 참고.
+
 ---
 
 ## 커밋 규칙
@@ -328,6 +347,8 @@ chore(0-mvp): step 2 output        ← index.json, step2-result.json
 ```
 
 `qa-output/`은 `.gitignore`에 등록되어 있으므로 커밋에 포함되지 않습니다. 릴리스 보고서 등 외부 공유가 필요한 산출물은 별도 채널(이슈 첨부, 내부 스토리지 등)을 통해 관리하세요.
+
+**팀 간 공유가 필요한 경우:** 두 가지 방법이 있습니다. (1) 특정 파일만 강제 추가 — `git add -f qa-output/release-report.md` 로 해당 파일만 선택해 별도 브랜치에 커밋. (2) 외부 스토리지 업로드 — S3, Google Drive, Confluence 등에 업로드 후 이슈/PR에 링크. `.gitignore`에서 `qa-output/`을 제거해 전체를 추적 대상으로 전환하면 중간 산출물이 모두 포함되어 저장소가 비대해지므로 권장하지 않습니다.
 
 ---
 
@@ -424,3 +445,40 @@ QA 에이전트가 릴리스 승인을 권고하려면 아래 조건을 모두 �
 - RAG 출처 일치율 ≥ 95% (RAG 서비스인 경우)
 - 모델 안전 게이트 통과 (모델·알고리즘 변경 시, 미통과 시 사이클 즉시 중단)
 - 에이전틱 액션 안전성 통과 (에이전틱 AI인 경우)
+
+---
+
+## 하네스 구조 평가
+
+이 프레임워크 자체가 여러 QA팀이 공통으로 가져다 쓰기에 충분히 견고한 구조인지 `assessments/`에서 주기적으로 평가합니다.
+
+평가 대상은 특정 QA 결과나 모델 응답이 아니라 **하네스 구조**입니다.
+모델·agent·dataset·workflow가 변경된 뒤에도 실행 계약과 평가 기준이 흔들리지 않는지 확인합니다.
+
+**현재 상태:** 95 / 100 — 매우 우수한 구조 (2026-06-14, `assessments/latest.md` 참고)
+
+### 평가 디렉토리 구조
+
+```
+assessments/
+├── README.md           # 평가 원칙, 요청 방법, 결과 구조 설명
+├── history.md          # run 이력 (날짜, 점수, 평가자, 주요 변경, 등급)
+├── latest.md           # 최신 run 요약 및 파일 포인터
+├── rubrics/            # 루브릭 버전 (첫 run 생성 후 배점 고정)
+├── templates/          # 평가 프롬프트 템플릿
+├── runs/               # run 단위 결과 (assessment.json, report.md, snapshot.md)
+└── legacy/             # 구 평가 체계 기록 (참고용, 새 평가에서 미사용)
+```
+
+### 평가 요청 방법
+
+하네스 구조를 크게 변경한 뒤 아래 프롬프트로 평가를 요청합니다.
+
+```text
+assessments/templates/harness-assessment-prompt.md 기준으로
+현재 하네스 구조를 평가해줘.
+루브릭은 assessments/rubrics/harness-structure-rubric.v1.md를 사용하고,
+결과는 새 assessments/runs/assess-YYYYMMDD-NNN/에 남겨줘.
+```
+
+권장 평가자: **Codex** — Claude Code로 작성된 하네스를 다른 모델 계열로 평가해 자기평가 편향을 줄입니다.

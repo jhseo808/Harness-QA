@@ -80,31 +80,11 @@ ID: {BUG-번호}
 | appium | `qa-output/appium-result.md`, `qa-output/appium-summary.json` |
 | api-tester | `qa-output/api-test-result.md`, `qa-output/api-test-summary.json` |
 | ai-service-tester | `qa-output/ai-test-result.md`, `qa-output/ai-test-summary.json` |
-| **AI QA 서브팀 (ai-qa/)** | |
-| ai-qa-lead | `qa-output/ai-qa-strategy.md` |
-| ai-evaluator | `qa-output/ai-eval-setup.md`, `qa-output/ai-eval-result.md`, `qa-output/ai-eval-summary.json` |
-| ai-safety-tester | `qa-output/ai-safety-result.md`, `qa-output/ai-safety-summary.json` |
-| ai-perf-observability-tester | `qa-output/ai-perf-result.md`, `qa-output/ai-perf-summary.json` |
-| gen-quality-tester | `qa-output/gen-quality-result.md`, `qa-output/gen-quality-summary.json` |
-| gen-context-tester | `qa-output/gen-context-result.md`, `qa-output/gen-context-summary.json` |
-| rag-pipeline-tester | `qa-output/rag-pipeline-result.md`, `qa-output/rag-pipeline-summary.json` |
-| rag-retrieval-tester | `qa-output/rag-retrieval-result.md`, `qa-output/rag-retrieval-summary.json` |
-| agent-planning-tester | `qa-output/agent-planning-result.md`, `qa-output/agent-planning-summary.json` |
-| agent-memory-state-tester | `qa-output/agent-memory-state-result.md`, `qa-output/agent-memory-state-summary.json` |
-| agent-execution-tester | `qa-output/agent-execution-result.md`, `qa-output/agent-execution-summary.json` |
-| agent-reflection-recovery-tester | `qa-output/agent-reflection-recovery-result.md`, `qa-output/agent-reflection-recovery-summary.json` |
-| agent-action-safety-tester | `qa-output/agent-action-safety-result.md`, `qa-output/agent-action-safety-summary.json` |
-| agent-multi-agent-tester | `qa-output/agent-multi-agent-result.md`, `qa-output/agent-multi-agent-summary.json` |
-| model-safety-gate | `qa-output/model-safety-gate-result.md`, `qa-output/model-safety-gate-summary.json` |
-| model-capability-evaluator | `qa-output/model-capability-result.md`, `qa-output/model-capability-summary.json` |
-| model-alignment-tester | `qa-output/model-alignment-result.md`, `qa-output/model-alignment-summary.json` |
-| model-compatibility-tester | `qa-output/model-compatibility-result.md`, `qa-output/model-compatibility-summary.json` |
-| model-human-evaluator | `qa-output/model-human-eval-result.md`, `qa-output/model-human-eval-summary.json` |
-| model-rollout-monitor | `qa-output/model-rollout-result.md`, `qa-output/model-rollout-summary.json` |
-| ai-generated-output-tester | `qa-output/ai-generated-output-result.md`, `qa-output/ai-generated-output-summary.json` |
 | performance-tester | `qa-output/performance-result.md`, `qa-output/performance-summary.json` |
 | security-tester | `qa-output/security-result.md`, `qa-output/security-summary.json` |
 | reporter | `qa-output/release-report.md` |
+
+AI QA 서브팀(`ai-qa/`) 산출물 경로는 `agents/ai-qa/_base.md`에 정의한다.
 
 **규칙:**
 - 모든 산출물은 프로젝트 루트 기준 상대 경로 `qa-output/` 아래에 작성한다.

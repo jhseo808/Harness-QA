@@ -40,9 +40,15 @@
 - `qa-output/rag-pipeline-summary.json` — 구조화 요약
 - 청킹 경계 오류 또는 구버전 노출이 있으면 `release_gate: fail`
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step2-result.json`을 작성하라:
-- 성공 → `{"status": "completed", "summary": "RAG 파이프라인 검증 완료. 청킹 오류: 0건, 인덱싱: 정상, 검색 지연 P95: 78ms", "artifacts": ["qa-output/rag-pipeline-result.md", "qa-output/rag-pipeline-summary.json"]}`
-- 결함 발견 → `{"status": "completed", "summary": "RAG 파이프라인 검증 완료. 청킹 경계 오류 3건 발견 (표 분리)", "artifacts": ["qa-output/rag-pipeline-result.md", "qa-output/rag-pipeline-summary.json"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step2-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "RAG 파이프라인 검증 완료. 청킹 오류: 0건, 인덱싱: 정상, 검색 지연 P95: 78ms", "artifacts": ["qa-output/rag-pipeline-result.md", "qa-output/rag-pipeline-summary.json"]}`
+   - 결함 발견 → `{"status": "completed", "summary": "RAG 파이프라인 검증 완료. 청킹 경계 오류 3건 발견 (표 분리)", "artifacts": ["qa-output/rag-pipeline-result.md", "qa-output/rag-pipeline-summary.json"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 검색 품질(그라운딩·출처 일치)을 테스트하지 마라. 이유: 검색 품질 검증은 step 3(rag-retrieval-tester)에서 담당.
+- 파이프라인 결함 발견 시 임의로 수정하지 마라. 이유: 결함은 기록 후 담당 팀에 전달.

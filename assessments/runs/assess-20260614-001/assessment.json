@@ -1,0 +1,118 @@
+{
+  "assessment_id": "assess-20260614-001",
+  "target": "harness-structure",
+  "rubric_version": "harness-structure-rubric.v1",
+  "evaluated_at": "2026-06-14T00:03:06+09:00",
+  "evaluator": {
+    "tool": "Codex",
+    "model_family": "GPT-5",
+    "reason": "Claude Code 중심 하네스를 다른 모델 계열로 평가해 자기평가 편향을 줄이기 위함"
+  },
+  "harness_commit": "bb0d794",
+  "working_tree_state": "dirty",
+  "compared_to_run": "none",
+  "total_score": 89,
+  "rating": "구조는 있으나 무거움",
+  "scores": {
+    "core_execution_method": 18,
+    "step_state_result_contract": 14,
+    "qa_agent_structure": 17,
+    "core_extension_boundary": 12,
+    "onboarding_maintainability_structure": 14,
+    "example_template_structure": 9,
+    "assessment_history_structure": 5
+  },
+  "strengths": [
+    "scripts/execute.py가 pending step 선택, 상태 전이, result 검증, 재시도, 복구, agent 주입을 일관된 단일 루프로 제공한다.",
+    "stepN-result.json에서 completed/error/blocked 상태별 필드를 검증하고 index.json 반영 책임을 실행기로 모은 계약이 명확하다.",
+    "qa/와 ai-qa/ agent 구성이 일반 QA, 생성AI, RAG, agentic, 모델 변경 검증으로 폭넓게 분리되어 있다.",
+    "datasets/manifest.yaml이 suite, owner_agent, schema, result storage, promotion policy를 연결해 AI-QA 확장 구조를 제공한다.",
+    "README.md, GETTING_STARTED.md, datasets/README.md, docs/ACTIVATION_MATRIX_GUIDE.md가 새 QA팀의 도입과 수동 확장 흐름을 안내한다.",
+    "assessments/가 legacy 기록, 고정 루브릭, run 기반 평가 구조를 분리해 하네스 자체 QA의 기반을 갖췄다."
+  ],
+  "risks": [
+    "qa/_base.md의 산출물 경로 규약에 ai-qa/ agent 산출물이 함께 포함되어 일반 QA와 AI-QA 확장 경계가 흐려진다.",
+    ".claude/commands/harness.md는 qa-output을 chore 커밋에 포함한다고 설명하지만 scripts/execute.py는 qa-output을 reset하여 커밋에서 제외한다.",
+    "activation_matrix는 강한 전략 개념이지만 execute.py가 자동으로 읽지 않으며, 수동 step 변환 절차에 의존한다.",
+    "agent 수와 AI-QA 설명량이 많아 다른 QA팀이 최소 Core만 이해하고 도입하기에는 초기 인지 부하가 크다.",
+    "Core 실행기가 Claude CLI 호출 방식에 직접 묶여 있어 모델/도구 교체 시 adapter 경계가 아직 약하다."
+  ],
+  "change_impact_summary": [
+    "첫 run이므로 직전 run 대비 비교 대상은 없다.",
+    "legacy v1.x 평가는 참고 맥락으로만 사용했으며, 새 v1 루브릭 기준의 기준점 run으로 기록한다.",
+    "현재 working tree가 dirty 상태이므로 이 평가는 bb0d794와 미커밋 변경이 섞인 현재 작업공간 기준이다."
+  ],
+  "recommended_next_actions": [
+    "qa/_base.md에서 AI-QA 산출물 경로를 분리해 일반 QA Core와 AI-QA 확장 경계를 선명하게 만든다.",
+    ".claude/commands/harness.md의 2단계 커밋 설명을 scripts/execute.py의 실제 qa-output 제외 정책과 일치시킨다.",
+    "activation_matrix에서 후속 step을 만드는 표준 adapter 계약을 문서 수준을 넘어 index 확장 규칙이나 템플릿으로 고정한다.",
+    "Core 실행기에서 Claude CLI 호출부를 최소 adapter 경계로 분리해 모델/도구 변경 내성을 높인다."
+  ],
+  "target_score": 95,
+  "target_score_gap": 6,
+  "priority_improvements_to_95": [
+    {
+      "priority": "P0",
+      "item": "일반 QA base와 AI-QA base의 산출물/역할 계약 분리",
+      "rubric_area": "QA Agent 구조, Core와 선택 확장 경계",
+      "expected_score_gain": 3,
+      "difficulty": "medium",
+      "reason": "새 QA팀이 일반 QA만 도입할 때 AI-QA 전체 산출물 표를 함께 이해해야 하므로 Core 경량성이 떨어진다.",
+      "suggested_change": "agents/qa/_base.md에는 일반 QA 산출물과 공통 result 계약만 남기고, AI-QA 산출물은 agents/ai-qa/_base.md와 README의 AI-QA 확장 섹션으로 한정한다."
+    },
+    {
+      "priority": "P0",
+      "item": "qa-output 커밋 정책 불일치 수정",
+      "rubric_area": "Step/상태/Result 계약, 온보딩/유지보수 구조",
+      "expected_score_gain": 2,
+      "difficulty": "low",
+      "reason": "slash command는 qa-output 포함 커밋을 말하지만 실행기는 qa-output을 제외해 하네스 사용자가 산출물 보관 방식을 오해할 수 있다.",
+      "suggested_change": ".claude/commands/harness.md의 2단계 커밋 설명을 README.md와 scripts/execute.py의 실제 정책처럼 'result/index는 커밋, qa-output은 기본 제외'로 수정한다."
+    },
+    {
+      "priority": "P1",
+      "item": "activation_matrix → step 변환 계약 표준화",
+      "rubric_area": "Core와 선택 확장 경계, 예시/템플릿 구조",
+      "expected_score_gain": 2,
+      "difficulty": "medium",
+      "reason": "현재 수동 변환 가이드는 있지만 phase index에 어떤 표준 필드로 기록할지와 skipped/required 처리 규칙이 실행 계약 수준으로 고정되어 있지 않다.",
+      "suggested_change": "examples/phases/2-ai-qa-cycle 또는 별도 template에 activation_matrix 변환 결과의 표준 index/step 예시를 추가하고 required/skipped/parallel_group 처리 규칙을 고정한다."
+    },
+    {
+      "priority": "P1",
+      "item": "모델/도구 호출 adapter 경계 도입",
+      "rubric_area": "Core 실행 방식, 모델/하네스 변경 내성",
+      "expected_score_gain": 2,
+      "difficulty": "medium",
+      "reason": "하네스는 Claude Code 중심으로 설계되어 있으나, 모델 변경 내성을 평가 목표로 삼는다면 호출부 경계가 더 선명해야 한다.",
+      "suggested_change": "scripts/execute.py에서 Claude CLI 명령 조립을 별도 메서드/adapter 설정으로 분리하고 README에 교체 지점을 명시한다."
+    },
+    {
+      "priority": "P2",
+      "item": "최소 Core 예시 경량화",
+      "rubric_area": "예시/템플릿 구조, 온보딩/유지보수 구조",
+      "expected_score_gain": 1,
+      "difficulty": "low",
+      "reason": "0-mvp 예시는 유용하지만 일부 step이 completed 상태 예시로 남아 있어 새 팀이 최소 실행 템플릿으로 복사하기에는 덜 깨끗하다.",
+      "suggested_change": "examples/phases/minimal-core 또는 0-mvp-pending 예시를 추가해 agent와 dataset 없이 Core 계약만 보여주는 2~3 step 템플릿을 제공한다."
+    }
+  ],
+  "evidence_files": [
+    "scripts/execute.py",
+    ".claude/commands/harness.md",
+    "agents/qa/_base.md",
+    "agents/ai-qa/_base.md",
+    "README.md",
+    "GETTING_STARTED.md",
+    "docs/ACTIVATION_MATRIX_GUIDE.md",
+    "datasets/manifest.yaml",
+    "datasets/README.md",
+    "examples/phases/index.json",
+    "examples/phases/0-mvp/index.json",
+    "examples/phases/1-qa-cycle/index.json",
+    "examples/phases/2-ai-qa-cycle/index.json",
+    "assessments/rubrics/harness-structure-rubric.v1.md",
+    "assessments/templates/harness-assessment-prompt.md",
+    "assessments/history.md"
+  ]
+}

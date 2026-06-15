@@ -49,8 +49,14 @@
 - `qa-output/activation-matrix.json` 파일이 존재하고 `datasets/schemas/activation-matrix.schema.json`을 만족해야 함
   - `run_id: "run-YYYYMMDD-001"` 형식, `suite: "rag_release"` 포함
 
-## 결과 파일 작성
+## 검증 절차
 
-작업 완료 후 `examples/phases/2-ai-qa-cycle/step0-result.json`을 작성하라:
-- 성공 → `{"status": "completed", "summary": "AI QA 전략 수립 완료. 변경 유형: RAG+프롬프트. 활성화: ai-evaluator, rag-pipeline-tester, rag-retrieval-tester, ai-perf-observability-tester, ai-safety-tester. gen-*/model-* 비활성화", "artifacts": ["qa-output/ai-qa-strategy.md", "qa-output/activation-matrix.json"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/2-ai-qa-cycle/step0-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "AI QA 전략 수립 완료. 변경 유형: RAG+프롬프트. 활성화: ai-evaluator, rag-pipeline-tester, rag-retrieval-tester, ai-perf-observability-tester, ai-safety-tester. gen-*/model-* 비활성화", "artifacts": ["qa-output/ai-qa-strategy.md", "qa-output/activation-matrix.json"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 실제 모델 API를 호출하지 마라. 이유: 전략 수립 단계이며, 실제 실행은 이후 step에서 담당.
+- index.json을 직접 수정하지 마라. 이유: 하네스가 자동 관리하는 파일.

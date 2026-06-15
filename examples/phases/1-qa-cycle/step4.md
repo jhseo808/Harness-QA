@@ -65,8 +65,14 @@ npx playwright test --reporter=list
 
 `pages/TodoPage.ts` 존재 확인 — 이 파일이 없으면 작업 미완료
 
-## 결과 파일 작성
+## 검증 절차
 
-`examples/phases/1-qa-cycle/step4-result.json`:
-- 완료 → `{"status": "completed", "summary": "Playwright 테스트 N개 실행. 통과: N, 실패: N. 결함 N건 발견.", "artifacts": ["qa-output/playwright-result.md", "qa-output/playwright-summary.json", "tests/todo.spec.ts", "pages/TodoPage.ts"]}`
-- 환경 문제 → `{"status": "blocked", "blocked_reason": "앱 서버 미실행 또는 playwright 미설치"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/1-qa-cycle/step4-result.json`을 작성하라:
+   - 완료 → `{"status": "completed", "summary": "Playwright 테스트 N개 실행. 통과: N, 실패: N. 결함 N건 발견.", "artifacts": ["qa-output/playwright-result.md", "qa-output/playwright-summary.json", "tests/todo.spec.ts", "pages/TodoPage.ts"]}`
+   - 환경 문제 → `{"status": "blocked", "blocked_reason": "앱 서버 미실행 또는 playwright 미설치"}`
+
+## 금지사항
+
+- POM(Page Object Model) 없이 spec 파일을 작성하지 마라. 이유: 로케이터 중복 및 유지보수성 저하.
+- API 엔드포인트를 직접 호출해 테스트하지 마라. 이유: API 검증은 step 3에서 완료.

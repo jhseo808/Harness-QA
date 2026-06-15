@@ -28,9 +28,15 @@
 - 발견된 결함 (BUG-XXX 형식)
 - 미검증 항목 및 이유
 
-## 결과 파일 작성
+## 검증 절차
 
-`examples/phases/1-qa-cycle/step3-result.json`:
-- 성공 → `{"status": "completed", "summary": "API 테스트 N개 실행. 통과: N, 실패: N. 결함 N건 발견.", "artifacts": ["qa-output/api-test-result.md", "qa-output/api-test-summary.json"]}`
-- 환경 문제 (서버 미실행 등) → `{"status": "blocked", "blocked_reason": "http://localhost:3000 접근 불가"}`
-- 재시도 가능 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/1-qa-cycle/step3-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "API 테스트 N개 실행. 통과: N, 실패: N. 결함 N건 발견.", "artifacts": ["qa-output/api-test-result.md", "qa-output/api-test-summary.json"]}`
+   - 환경 문제 (서버 미실행 등) → `{"status": "blocked", "blocked_reason": "http://localhost:3000 접근 불가"}`
+   - 재시도 가능 실패 → `{"status": "error", "error_message": "구체적 에러 내용"}`
+
+## 금지사항
+
+- 소스 파일을 수정하지 마라. 이유: QA step은 읽기 전용.
+- 브라우저를 통한 UI 테스트를 실행하지 마라. 이유: 웹 UI 검증은 step 4(Playwright)에서 담당.

@@ -1,0 +1,43 @@
+{
+  "id": "ab-rag_top_k-0001",
+  "version": "1.0.0",
+  "dataset_version": "v1.0",
+  "category": "rag_top_k",
+  "ai_type": "rag",
+  "suite_tags": ["rag_release", "nightly"],
+  "risk_level": "P2",
+  "status": "active",
+  "variants": {
+    "control": {
+      "model_id": "claude-sonnet-4-6",
+      "prompt_version": "v2.1",
+      "rag_config_version": "v1.0-top3"
+    },
+    "candidate": {
+      "model_id": "claude-sonnet-4-6",
+      "prompt_version": "v2.1",
+      "rag_config_version": "v1.1-top5"
+    }
+  },
+  "input": {
+    "user": "A/S 정책과 보증 기간에 대해 알려주세요.",
+    "context_documents": []
+  },
+  "expected": {
+    "behavior": "candidate_not_worse_than_control",
+    "evaluation_method": "llm_judge",
+    "pass_threshold": 0.8
+  },
+  "metrics": {
+    "quality": ["accuracy", "groundedness", "completeness"],
+    "safety": ["safety_violation_rate"],
+    "product": ["answer_acceptance_rate", "reask_rate"],
+    "operations": ["p95_latency_ms", "cost_per_request_usd"]
+  },
+  "metadata": {
+    "created_at": "2026-06-13T00:00:00+09:00",
+    "source": "human",
+    "owner": "ai-qa",
+    "note": "top-k=3 vs top-k=5 비교. 여러 문서에 분산된 정보(A/S 정책 + 보증 기간)를 묻는 질문에서 top-k 증가가 완성도에 미치는 영향 확인. 비용 증가 여부도 측정."
+  }
+}

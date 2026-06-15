@@ -26,8 +26,14 @@ qa-strategy.md의 활성화 agent 목록을 반드시 확인하고 그 범위 �
 - 리스크 분석 (P0/P1 우선순위)
 - 요구사항 GAP 목록 (모호한 부분)
 
-## 결과 파일 작성
+## 검증 절차
 
-`examples/phases/1-qa-cycle/step1-result.json`:
-- 성공 → `{"status": "completed", "summary": "요구사항 분석 완료. AC N개 작성. GAP N건 발견.", "artifacts": ["qa-output/test-strategy.md"]}`
-- 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/1-qa-cycle/step1-result.json`을 작성하라:
+   - 성공 → `{"status": "completed", "summary": "요구사항 분석 완료. AC N개 작성. GAP N건 발견.", "artifacts": ["qa-output/test-strategy.md"]}`
+   - 진행 불가 → `{"status": "blocked", "blocked_reason": "이유"}`
+
+## 금지사항
+
+- 테스트케이스를 작성하지 마라. 이유: 케이스 설계는 step 2(test-case-designer)에서 담당.
+- 소스 파일을 수정하지 마라. 이유: QA step은 읽기 전용.

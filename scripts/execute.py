@@ -63,10 +63,11 @@ class StepExecutor:
     CHORE_MSG = "chore({phase}): step {num} output"
     TZ = timezone(timedelta(hours=9))
 
-    def __init__(self, phase_dir_name: str, *, phases_dir: str = "phases", auto_push: bool = False):
+    def __init__(self, phase_dir_name: str, *, phases_dir: str = "phases", auto_push: bool = False, skip_permissions: bool = True):
         self._root = str(ROOT)
         self._phases_dir = ROOT / phases_dir
         self._phase_dir = self._phases_dir / phase_dir_name
+        self._skip_permissions = skip_permissions
         self._phase_dir_name = phase_dir_name
         self._top_index_file = self._phases_dir / "index.json"
         self._auto_push = auto_push
@@ -184,6 +185,9 @@ class StepExecutor:
             else:
                 print(f"  WARN: 코드 커밋 실패: {r.stderr.strip()}")
 
+        # 2차 커밋: result.json, index.json 등 하네스 추적 파일만 포함.
+        # 1차 커밋(코드)에서 제외했던 파일들이 다시 add됨 — 의도된 2-commit 전략.
+        # output.json만 여전히 제외(step 원시 로그는 영구 보관 불필요).
         self._run_git("add", "-A")
         self._run_git("reset", "HEAD", "--", output_rel)  # output은 커밋하지 않음
         if self._run_git("diff", "--cached", "--quiet").returncode != 0:
@@ -347,6 +351,13 @@ class StepExecutor:
 
     # --- Claude 호출 ---
 
+    def _build_runner_cmd(self, prompt: str) -> list:
+        """AI runner 호출 명령을 조립한다. 모델/도구 교체 시 이 메서드만 수정한다."""
+        cmd = ["claude", "-p"]
+        if self._skip_permissions:
+            cmd += ["--dangerously-skip-permissions"]
+        return cmd + ["--output-format", "json", prompt]
+
     def _invoke_claude(self, step: dict, preamble: str) -> dict:
         step_num, step_name = step["step"], step["name"]
         step_file = self._phase_dir / f"step{step_num}.md"
@@ -357,7 +368,7 @@ class StepExecutor:
 
         prompt = preamble + step_file.read_text(encoding="utf-8")
         result = subprocess.run(
-            ["claude", "-p", "--dangerously-skip-permissions", "--output-format", "json", prompt],
+            self._build_runner_cmd(prompt),
             cwd=self._root, capture_output=True, text=True, timeout=1800,
         )
 
@@ -542,9 +553,16 @@ def main():
                         help="Phases root directory relative to project root (default: phases). "
                              "Use 'examples/phases' to run example phases.")
     parser.add_argument("--push", action="store_true", help="Push branch after completion")
+    parser.add_argument("--no-skip-permissions", action="store_true",
+                        help="Do not pass --dangerously-skip-permissions to Claude CLI")
     args = parser.parse_args()
 
-    StepExecutor(args.phase_dir, phases_dir=args.phases_dir, auto_push=args.push).run()
+    StepExecutor(
+        args.phase_dir,
+        phases_dir=args.phases_dir,
+        auto_push=args.push,
+        skip_permissions=not args.no_skip_permissions,
+    ).run()
 
 
 if __name__ == "__main__":

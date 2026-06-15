@@ -24,8 +24,14 @@
 - 품질 게이트 체크리스트 (통과/실패 여부)
 - 미테스트 영역 명시
 
-## 결과 파일 작성
+## 검증 절차
 
-`examples/phases/1-qa-cycle/step5-result.json`:
-- 완료 → `{"status": "completed", "summary": "최종 보고서 작성 완료. 릴리스 권고: [승인/조건부/차단]. 총 결함 N건 (P0: N, P1: N).", "artifacts": ["qa-output/release-report.md"]}`
-- 산출물 누락으로 진행 불가 → `{"status": "blocked", "blocked_reason": "qa-output/api-test-result.md 파일 없음"}`
+1. Acceptance Criteria를 모두 충족했는지 확인한다.
+2. 작업 완료 후 `examples/phases/1-qa-cycle/step5-result.json`을 작성하라:
+   - 완료 → `{"status": "completed", "summary": "최종 보고서 작성 완료. 릴리스 권고: [승인/조건부/차단]. 총 결함 N건 (P0: N, P1: N).", "artifacts": ["qa-output/release-report.md"]}`
+   - 산출물 누락으로 진행 불가 → `{"status": "blocked", "blocked_reason": "qa-output/api-test-result.md 파일 없음"}`
+
+## 금지사항
+
+- 새로운 테스트를 실행하지 마라. 이유: 이전 step에서 완료된 결과만 집계.
+- qa-strategy.md의 품질 게이트 기준을 임의로 완화하지 마라. 이유: 이 step에서 확정된 기준을 변경할 권한이 없음.
